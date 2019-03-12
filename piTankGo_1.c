@@ -25,16 +25,14 @@ int flags_player = 0; //para que empiece en wait next
 //------------------------------------------------------
 
 // int ConfiguracionSistema (TipoSistema *p_sistema): procedimiento de configuracion del sistema.
-// Realizará, entra otras, todas las operaciones necesarias para:
 // configurar el uso de posibles librerías (e.g. Wiring Pi),
 // configurar las interrupciones externas asociadas a los pines GPIO,
 // configurar las interrupciones periódicas y sus correspondientes temporizadores,
 // crear, si fuese necesario, los threads adicionales que pueda requerir el sistema
-int ConfiguraSistema (TipoSistema *p_sistema) {
+int ConfiguraSistema (TipoSistema *p_sistema) { //Configuramos el sistema del puntero p_sistema
 	int result = 0;
 
 	//set wiringPi library
-
 	if (wiringPiSetupGpio () < 0) {
 			piLock (STD_IO_BUFFER_KEY);
 			printf ("Unable to setup wiringPi\n");
@@ -43,94 +41,44 @@ int ConfiguraSistema (TipoSistema *p_sistema) {
 			return -1;
 	}
 
+	//Establecemos pin 17 a 5V(HIGH)
+	pinMode(17,OUTPUT);
+	digitalWrite (17, HIGH);
+
+	//Establecemos pin 23 como salida y lo usamos para reproducir las notas de los efectos
 	pinMode(23,OUTPUT);
 	softToneCreate(23);
 	softToneWrite (23,0);
-
 	//...
 	//Configurar interrupciones externas de pines GPIO
 	//Configurar las interrupciones a usar(temporizador)
 	//Crear threads adicionales necesarios para el sistema
-
 	return result;
 }
 
 // int InicializaSistema (TipoSistema *p_sistema): procedimiento de inicializacion del sistema.
-// Realizará, entra otras, todas las operaciones necesarias para:
 // la inicializacion de los diferentes elementos de los que consta nuestro sistema,
 // la torreta, los efectos, etc.
 // igualmente arrancará el thread de exploración del teclado del PC
-int InicializaSistema (TipoSistema *p_sistema) {
+int InicializaSistema (TipoSistema *p_sistema) { //Inicializamos el sistema y sus atributos(player...)
 	int result = 0;
-	//Inicializamos los efectos
-	//TipoEfecto* efecto_disparo;
-	//TipoEfecto* efecto_impacto;
+	//Inicializamos los efectos dentro del objeto player
 	InicializaEfecto (&p_sistema->player.efecto_disparo, "DISPARO" , frecuenciasDisparo, tiemposDisparo, 16);
 	InicializaEfecto (&p_sistema->player.efecto_impacto, "IMPACTO" , frecuenciasImpacto, tiemposImpacto, 32);
-	// ...
 
-	//Inicializamos player
+	//Inicializamos el objeto player p_sistema->player es el objeto player bajo el puntero al sistema
 	InicializaPlayer(&(p_sistema->player));
+
+	//Inicializamos el objeto teclado, que controla el teclado matricial(tecla pulsada)
 	initialize(&teclado);
 
-	// Lanzamos thread para exploracion del teclado convencional del PC
-	/*result = piThreadCreate (thread_explora_teclado_PC);
-
-	if (result != 0) {
-		printf ("Thread didn't start!!!\n");
-		return -1;
-	}*/
+	//Inicializamos el objeto servo
+	InicializaServo (&servo);
 
 	return result;
 }
 
-//------------------------------------------------------
-// SUBRUTINAS DE ATENCION A LAS INTERRUPCIONES
-//------------------------------------------------------
-
-/*PI_THREAD (thread_explora_teclado_PC) {
-	int teclaPulsada;
-
-	while(1) {
-		delay(10); // Wiring Pi function: pauses program execution for at least 10 ms
-
-		piLock (STD_IO_BUFFER_KEY);
-
-		if(kbhit()) { //Si pulsamos el teclado
-			teclaPulsada = kbread(); //Se lee la tecla pulsada
-
-			switch(teclaPulsada) {
-				case 't':
-					piLock (PLAYER_FLAGS_KEY);
-					flags_player |= FLAG_START_IMPACTO;
-					piUnlock (PLAYER_FLAGS_KEY);
-					printf("Tecla T pulsada!\n");
-					fflush(stdout);
-					break;
-
-				case 's':
-					piLock (PLAYER_FLAGS_KEY);
-					flags_player |= FLAG_START_DISPARO;
-					piUnlock (PLAYER_FLAGS_KEY);
-					printf("Tecla S pulsada!\n");
-					fflush(stdout);
-					break;
-
-				case 'q':
-					exit(0);
-					break;
-
-				default:
-					printf("INVALID KEY!!!\n");
-					break;
-			}
-		}
-
-		piUnlock (STD_IO_BUFFER_KEY);
-	}
-}*/
-
-// wait until next_activation (absolute time)
+//Funcion de retardo que se encarga de sincronizar el automata
 void delay_until (unsigned int next) {
 	unsigned int now = millis();
 	if (next > now) {
@@ -140,14 +88,20 @@ void delay_until (unsigned int next) {
 
 int main ()
 {
+	//Declaramos el sistema a usar
 	TipoSistema sistema;
 	unsigned int next;
 
 	// Configuracion e inicializacion del sistema
 	ConfiguraSistema (&sistema);
 
+	//Inicializamos todos los componentes del sistema
 	InicializaSistema (&sistema);
-	//Lista de transiciones de la maquina de estados
+
+	//TRANSICIONES MAQUINAS DE ESTADOS
+	//ESTADO DE PARTIDA , COMPROBACION DE FLAG, ESTADO FINAL(si se cumple comprobacion), FUNCION A ejecutar
+
+	//Reproductor de efectos
 	fsm_trans_t reproductor[] = {
 		{ WAIT_START, CompruebaStartDisparo, WAIT_NEXT, InicializaPlayDisparo },
 		{ WAIT_START, CompruebaStartImpacto, WAIT_NEXT, InicializaPlayImpacto },
@@ -158,6 +112,7 @@ int main ()
 		{-1, NULL, -1, NULL },
 	};
 
+	//Excitacion columnas teclado matricial
 	fsm_trans_t columns[] = {
 			{ KEY_COL_1, CompruebaColumnTimeout, KEY_COL_2, col_2 },
 			{ KEY_COL_2, CompruebaColumnTimeout, KEY_COL_3, col_3 },
@@ -166,25 +121,41 @@ int main ()
 			{-1, NULL, -1, NULL },
 	};
 
+	//Prevencion de rebotes
 	fsm_trans_t keypad[] = {
 			{ KEY_WAITING, key_pressed, KEY_WAITING, process_key},
 			{-1, NULL, -1, NULL },
 	};
 
+	//Control servo horizontal
+	fsm_trans_t servo_basico[] = {
+			{ WAIT_KEY, CompruebaIzquierda, WAIT_KEY, MueveServoIzquierda },
+			{ WAIT_KEY, CompruebaDerecha, WAIT_KEY, MueveServoDerecha },
+			{-1, NULL, -1, NULL },
+		};
+
+	//Creacion de las maquinas de estados
+	//ESTADO INICIAL, LISTA TRANSICIONES, PUNTERO ASOCIADO A LA MAQUINA
 	fsm_t* player_fsm = fsm_new (WAIT_START, reproductor, &(sistema.player));
 	fsm_t* columns_fsm = fsm_new (KEY_COL_1, columns, &teclado);
 	fsm_t* keypad_fsm = fsm_new (KEY_WAITING, keypad, &teclado);
+	fsm_t* servo_fsm = fsm_new (WAIT_KEY, servo_basico, &servo);
 
-	//A completar por el alumno
+	//Valor inicial de next
 	next = millis();
+
+	//Bucle infinito que maneja las maquinas de estado del sistema
 	while (1) {
 		fsm_fire (player_fsm);
 		fsm_fire (columns_fsm);
 		fsm_fire (keypad_fsm);
+		fsm_fire (servo_fsm);
 
+		//Se actualizan las maquinas de estados cada CLK_MS
 		next += CLK_MS;
 		delay_until (next);
 	}
 
+	//Final del main, no se debe ejecutar nunca
 	return 0;
 }

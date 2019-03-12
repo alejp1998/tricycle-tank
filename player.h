@@ -4,7 +4,7 @@
  *  Created on: 21 de enero de 2019
  *      Author: FFM
  */
-
+ 
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
@@ -12,8 +12,6 @@
 #include <stdlib.h>
 #include <wiringPi.h>
 #include <softTone.h>
-//#include "tmr.h"
-
 #include "piTankGoLib.h"
 
 #define MAX_NUM_NOTAS 		2000

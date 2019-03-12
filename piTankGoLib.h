@@ -3,6 +3,7 @@
 #define _PITANKGOLIB_H_
 
 #include <stdio.h>
+#include <softPwm.h>
 
 #include "fsm.h"
 #include "tmr.h"
