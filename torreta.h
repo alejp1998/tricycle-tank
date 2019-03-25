@@ -14,20 +14,24 @@
 
 #include "piTankGoLib.h"
 
+#define	SERVOX_PIN			13
+#define	SERVOY_PIN			18
+
+#define SERVO_PWM_RANGE		400 // 100 * 400 = 40,000 µS = 40 ms // 25 Hz
+
+#define SERVO_INCREMENTO	1
+#define SERVO_MINIMO		9
+#define SERVO_MAXIMO		22
+
 typedef struct {
 	int inicio; // Valor correspondiente a la posicion inicial del servo
 	int incremento; // Cuantía en que se incrementa el valor de la posicion con cada movimiento del servo
 	int minimo; // Valor mínimo correspondiente a la posicion del servo
 	int maximo; // Valor maximo correspondiente a la posicion del servo
-} TipoServo;
+	int posicion; // Posicion actual del servo
+}TipoServo;
 
 typedef struct {
-	int x; // Coordenada x correspondiente a la posicion del servo horizontal
-	int y; // Coordenada y correspondiente a la posicion del servo vertical
-} TipoPosicionTorreta;
-
-typedef struct {
-	TipoPosicionTorreta posicion;
 	TipoServo servo_x;
 	TipoServo servo_y;
 
@@ -42,6 +46,7 @@ void InicializaTorreta (TipoTorreta *p_torreta);
 
 // Prototipos de funciones de entrada
 int CompruebaComienzo (fsm_t* this);
+int VolverMove (fsm_t* this);
 int CompruebaJoystickUp (fsm_t* this);
 int CompruebaJoystickDown (fsm_t* fsm_player);
 int CompruebaJoystickLeft (fsm_t* this);

@@ -10,9 +10,6 @@
 
 #define CLK_MS 5
 
-// ATENCION: Valores a modificar por el alumno
-// INTERVALO DE GUARDA ANTI-REBOTES
-//#define	DEBOUNCE_TIME	0
 // DURACION DISPARO IR
 #define SHOOTING_PERIOD 0
 

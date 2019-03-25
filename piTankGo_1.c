@@ -64,7 +64,7 @@ int InicializaSistema (TipoSistema *p_sistema) { //Inicializamos el sistema y su
 	int result = 0;
 	//Inicializamos los efectos dentro del objeto player
 	InicializaEfecto (&p_sistema->player.efecto_disparo, "DISPARO" , frecuenciasDisparo, tiemposDisparo, 16);
-	InicializaEfecto (&p_sistema->player.efecto_impacto, "IMPACTO" , frecuenciasImpacto, tiemposImpacto, 32);
+	InicializaEfecto (&p_sistema->player.efecto_impacto, "IMPACTO" , frecuenciaStarwars, tiempoStarwars, 59);
 
 	//Inicializamos el objeto player p_sistema->player es el objeto player bajo el puntero al sistema
 	InicializaPlayer(&(p_sistema->player));
@@ -73,7 +73,7 @@ int InicializaSistema (TipoSistema *p_sistema) { //Inicializamos el sistema y su
 	initialize(&teclado);
 
 	//Inicializamos el objeto servo
-	InicializaServo (&servo);
+	InicializaTorreta (&p_sistema->torreta);
 
 	return result;
 }
@@ -127,10 +127,21 @@ int main ()
 			{-1, NULL, -1, NULL },
 	};
 
-	//Control servo horizontal
-	fsm_trans_t servo_basico[] = {
-			{ WAIT_KEY, CompruebaIzquierda, WAIT_KEY, MueveServoIzquierda },
-			{ WAIT_KEY, CompruebaDerecha, WAIT_KEY, MueveServoDerecha },
+	//Control torreta
+	fsm_trans_t torreta[] = {
+			{ WAIT_START, CompruebaComienzo, WAIT_MOVE, ComienzaSistema },
+			{ WAIT_MOVE, CompruebaJoystickUp, JOYSTICK_UP, MueveTorretaArriba },
+			{ JOYSTICK_UP, VolverMove, WAIT_MOVE, NULL },
+			{ WAIT_MOVE, CompruebaJoystickDown, JOYSTICK_DOWN, MueveTorretaAbajo },
+			{ JOYSTICK_DOWN, VolverMove, WAIT_MOVE, NULL },
+			{ WAIT_MOVE, CompruebaJoystickLeft, JOYSTICK_LEFT, MueveTorretaIzquierda },
+			{ JOYSTICK_LEFT, VolverMove, WAIT_MOVE, NULL },
+			{ WAIT_MOVE, CompruebaJoystickRight, JOYSTICK_RIGHT, MueveTorretaDerecha },
+			{ JOYSTICK_RIGHT, VolverMove, WAIT_MOVE, NULL },
+			{ WAIT_MOVE, CompruebaTriggerButton, TRIGGER_BUTTON, DisparoIR },
+			{ TRIGGER_BUTTON, CompruebaImpacto, WAIT_MOVE, ImpactoDetectado },
+			{ TRIGGER_BUTTON, CompruebaTimeoutDisparo, WAIT_MOVE, FinalDisparoIR },
+			{ WAIT_MOVE, CompruebaFinalJuego, WAIT_END, FinalizaJuego },
 			{-1, NULL, -1, NULL },
 		};
 
@@ -139,7 +150,7 @@ int main ()
 	fsm_t* player_fsm = fsm_new (WAIT_START, reproductor, &(sistema.player));
 	fsm_t* columns_fsm = fsm_new (KEY_COL_1, columns, &teclado);
 	fsm_t* keypad_fsm = fsm_new (KEY_WAITING, keypad, &teclado);
-	fsm_t* servo_fsm = fsm_new (WAIT_KEY, servo_basico, &servo);
+	fsm_t* torreta_fsm = fsm_new (WAIT_MOVE, torreta, &(sistema.torreta));
 
 	//Valor inicial de next
 	next = millis();
@@ -149,7 +160,7 @@ int main ()
 		fsm_fire (player_fsm);
 		fsm_fire (columns_fsm);
 		fsm_fire (keypad_fsm);
-		fsm_fire (servo_fsm);
+		fsm_fire (torreta_fsm);
 
 		//Se actualizan las maquinas de estados cada CLK_MS
 		next += CLK_MS;

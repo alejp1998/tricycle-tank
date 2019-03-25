@@ -240,9 +240,9 @@ int CompruebaColumnTimeout (fsm_t* this) {
 			break;
 
 		case '8':
-			piLock (PLAYER_FLAGS_KEY);
-			flags_player |= FLAG_JOYSTICK_LEFT;
-			piUnlock (PLAYER_FLAGS_KEY);
+			piLock (SYSTEM_FLAGS_KEY);
+			flags_juego |= FLAG_JOYSTICK_LEFT;
+			piUnlock (SYSTEM_FLAGS_KEY);
 
 			piLock (STD_IO_BUFFER_KEY);
 			printf("\n[PULSACION][SERVO LEFT!!!!]\n");
@@ -251,12 +251,34 @@ int CompruebaColumnTimeout (fsm_t* this) {
 			break;
 
 		case 'E':
-			piLock (PLAYER_FLAGS_KEY);
-			flags_player |= FLAG_JOYSTICK_RIGHT;
-			piUnlock (PLAYER_FLAGS_KEY);
+			piLock (SYSTEM_FLAGS_KEY);
+			flags_juego |= FLAG_JOYSTICK_RIGHT;
+			piUnlock (SYSTEM_FLAGS_KEY);
 
 			piLock (STD_IO_BUFFER_KEY);
 			printf("\n[PULSACION][SERVO RIGHT!!!!]\n");
+			fflush(stdout);
+			piUnlock (STD_IO_BUFFER_KEY);
+			break;
+
+		case '6':
+			piLock (SYSTEM_FLAGS_KEY);
+			flags_juego |= FLAG_JOYSTICK_UP;
+			piUnlock (SYSTEM_FLAGS_KEY);
+
+			piLock (STD_IO_BUFFER_KEY);
+			printf("\n[PULSACION][SERVO UP!!!!]\n");
+			fflush(stdout);
+			piUnlock (STD_IO_BUFFER_KEY);
+			break;
+
+		case 'B':
+			piLock (SYSTEM_FLAGS_KEY);
+			flags_juego |= FLAG_JOYSTICK_DOWN;
+			piUnlock (SYSTEM_FLAGS_KEY);
+
+			piLock (STD_IO_BUFFER_KEY);
+			printf("\n[PULSACION][SERVO DOWN!!!!]\n");
 			fflush(stdout);
 			piUnlock (STD_IO_BUFFER_KEY);
 			break;

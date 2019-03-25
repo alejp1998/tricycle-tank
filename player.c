@@ -23,7 +23,7 @@ int InicializaEfecto (TipoEfecto *p_efecto, char *nombre, int *array_frecuencias
 void InicializaPlayer (TipoPlayer *p_player) {
 
 	p_player->posicion_nota_actual = 0;
-	p_player->p_efecto = &p_player->efecto_disparo; //Asociamos inicialmente el objeto disparo
+	p_player->p_efecto = &p_player->efecto_impacto; //Asociamos inicialmente el objeto disparo
 	p_player->frecuencia_nota_actual = p_player->p_efecto->frecuencias[p_player->posicion_nota_actual];
 	p_player->duracion_nota_actual = p_player->p_efecto->duraciones[p_player->posicion_nota_actual];
 
@@ -102,6 +102,8 @@ void InicializaPlayDisparo (fsm_t* this) {
 	p_player = (TipoPlayer*)(this->user_data);
 	p_player->p_efecto = &p_player->efecto_disparo;
 	p_player->posicion_nota_actual = 0;
+	p_player->frecuencia_nota_actual = p_player->p_efecto->frecuencias[p_player->posicion_nota_actual];
+	p_player->duracion_nota_actual = p_player->p_efecto->duraciones[p_player->posicion_nota_actual];
 
 	//Reproducimos la nota en el pin 23 y iniciamos su temporizador asociado
 	softToneWrite (23, p_player->frecuencia_nota_actual);//Reproduce la nota
@@ -124,6 +126,8 @@ void InicializaPlayImpacto (fsm_t* this) {
 	p_player = (TipoPlayer*)(this->user_data);
 	p_player->p_efecto = &p_player->efecto_impacto;
 	p_player->posicion_nota_actual = 0;
+	p_player->frecuencia_nota_actual = p_player->p_efecto->frecuencias[p_player->posicion_nota_actual];
+	p_player->duracion_nota_actual = p_player->p_efecto->duraciones[p_player->posicion_nota_actual];
 	softToneWrite (23, p_player->frecuencia_nota_actual);//Reproduce la nota
 	tmr_startms(p_player->p_timer,p_player->duracion_nota_actual); //Comienza a contar
 
@@ -157,6 +161,8 @@ void ActualizaPlayer (fsm_t* this) {
 	TipoPlayer *p_player;
 	p_player = (TipoPlayer*)(this->user_data);
 	p_player->posicion_nota_actual++;
+	p_player->frecuencia_nota_actual = p_player->p_efecto->frecuencias[p_player->posicion_nota_actual];
+	p_player->duracion_nota_actual = p_player->p_efecto->duraciones[p_player->posicion_nota_actual];
 	if (p_player->posicion_nota_actual > (p_player->p_efecto->num_notas-1)){
 		flags_player |= FLAG_PLAYER_END;
 	}

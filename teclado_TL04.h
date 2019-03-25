@@ -18,6 +18,9 @@
 #include "tmr.h"
 #include "piTankGoLib.h"
 
+extern int flags_juego;
+
+
 #define GPIO_COL_1 0
 #define GPIO_COL_2 1
 #define GPIO_COL_3 2
