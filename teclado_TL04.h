@@ -17,6 +17,7 @@
 #include "fsm.h"
 #include "tmr.h"
 #include "piTankGoLib.h"
+#include "torreta.h"
 
 extern int flags_juego;
 

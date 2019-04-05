@@ -64,7 +64,7 @@ int InicializaSistema (TipoSistema *p_sistema) { //Inicializamos el sistema y su
 	int result = 0;
 	//Inicializamos los efectos dentro del objeto player
 	InicializaEfecto (&p_sistema->player.efecto_disparo, "DISPARO" , frecuenciasDisparo, tiemposDisparo, 16);
-	InicializaEfecto (&p_sistema->player.efecto_impacto, "IMPACTO" , frecuenciaStarwars, tiempoStarwars, 59);
+	InicializaEfecto (&p_sistema->player.efecto_impacto, "IMPACTO" , frecuenciasImpacto, tiemposImpacto, 32);
 
 	//Inicializamos el objeto player p_sistema->player es el objeto player bajo el puntero al sistema
 	InicializaPlayer(&(p_sistema->player));

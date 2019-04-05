@@ -7,6 +7,14 @@
 
 void InicializaTorreta (TipoTorreta *p_torreta) {
 
+	pinMode (PIN_IMPACTO, INPUT);
+	pullUpDnControl(PIN_IMPACTO, PUD_DOWN);
+	wiringPiISR (PIN_IMPACTO, INT_EDGE_RISING, impacto_recibido_isr);
+
+	pinMode (PIN_DISPARO, OUTPUT);
+	digitalWrite (PIN_DISPARO, LOW);
+
+
 	//Inicializamos servo horizontal(x)
 	p_torreta->servo_x.incremento = SERVO_INCREMENTO;
 	p_torreta->servo_x.minimo 	= SERVO_MINIMO;
@@ -40,12 +48,20 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 
 	softPwmCreate (SERVOY_PIN, p_torreta->servo_y.inicio, SERVO_PWM_RANGE); // Internamente ya hace: piHiPri (90) ;
 	softPwmWrite(SERVOY_PIN, p_torreta->servo_y.posicion);
+
+	p_torreta->p_timer = tmr_new(timer_disparo_isr);
 }
 
 //------------------------------------------------------
 // FUNCIONES DE ENTRADA O DE TRANSICION DE LA MAQUINA DE ESTADOS
 //------------------------------------------------------
+void impacto_recibido_isr (void) {
 
+	piLock (SYSTEM_FLAGS_KEY);
+	flags_juego |= FLAG_TARGET_DONE;
+	piUnlock (SYSTEM_FLAGS_KEY);
+
+}
 int CompruebaComienzo (fsm_t* this) {
 	int result = 0;
 
@@ -85,38 +101,34 @@ int CompruebaJoystickRight (fsm_t* this) {
 
 int CompruebaTimeoutDisparo (fsm_t* this) {
 	int result = 0;
-
-	// A completar por el alumno
-	// ...
-
-	return result;
+		piLock (SYSTEM_FLAGS_KEY);
+		result = (flags_juego & FLAG_SHOOT_TIMEOUT);
+		piUnlock (SYSTEM_FLAGS_KEY);
+		return result;
 }
 
 int CompruebaImpacto (fsm_t* this) {
 	int result = 0;
-
-	// A completar por el alumno
-	// ...
-
-	return result;
+		piLock (SYSTEM_FLAGS_KEY);
+		result = (flags_juego & FLAG_TARGET_DONE);
+		piUnlock (SYSTEM_FLAGS_KEY);
+		return result;
 }
 
 int CompruebaTriggerButton (fsm_t* this) {
-	int result = 0;
-
-	// A completar por el alumno
-	// ...
-
-	return result;
+		int result = 0;
+		piLock (SYSTEM_FLAGS_KEY);
+		result = (flags_juego & FLAG_TRIGGER_BUTTON);
+		piUnlock (SYSTEM_FLAGS_KEY);
+		return result;
 }
 
 int CompruebaFinalJuego (fsm_t* this) {
 	int result = 0;
-
-	// A completar por el alumno
-	// ...
-
-	return result;
+			piLock (SYSTEM_FLAGS_KEY);
+			result = (flags_juego & FLAG_SYSTEM_END);
+			piUnlock (SYSTEM_FLAGS_KEY);
+			return result;
 }
 
 //------------------------------------------------------
@@ -193,21 +205,54 @@ void MueveTorretaDerecha (fsm_t* this) {
 }
 
 void DisparoIR (fsm_t* this) {
-	// A completar por el alumno
-	// ...
+
+	flags_juego &= ~FLAG_TRIGGER_BUTTON;
+	piLock (PLAYER_FLAGS_KEY);
+	flags_player |= FLAG_START_DISPARO;
+    piUnlock (PLAYER_FLAGS_KEY);
+
+    TipoTorreta *p_torreta;
+    p_torreta = (TipoTorreta*)(this->user_data);
+    digitalWrite (PIN_DISPARO, HIGH);
+	tmr_startms(p_torreta->p_timer,SHOOT_TIMEOUT);
+
 }
 
 void FinalDisparoIR (fsm_t* this) {
-	// A completar por el alumno
-	// ...
+	flags_juego &= ~FLAG_SHOOT_TIMEOUT;
+	piLock (STD_IO_BUFFER_KEY);
+	printf("shoot timeout!\n");
+	fflush(stdout);
+	piUnlock (STD_IO_BUFFER_KEY);
+    digitalWrite (PIN_DISPARO, LOW);
+
+
 }
 
 void ImpactoDetectado (fsm_t* this) {
-	// A completar por el alumno
-	// ...
+	flags_juego &= ~FLAG_TARGET_DONE;
+	digitalWrite (PIN_DISPARO, LOW);
+	piLock (STD_IO_BUFFER_KEY);
+	printf("Au!\n");
+	fflush(stdout);
+	piUnlock (STD_IO_BUFFER_KEY);
+	piLock (PLAYER_FLAGS_KEY);
+	flags_player |= FLAG_START_IMPACTO;
+	piUnlock (PLAYER_FLAGS_KEY);
+
 }
 
 void FinalizaJuego (fsm_t* this) {
 	// A completar por el alumno
 	// ...
+}
+void timer_disparo_isr (union sigval value) {
+	piLock (STD_IO_BUFFER_KEY);
+	printf("disparo timeout\n");
+	fflush(stdout);
+	piUnlock (STD_IO_BUFFER_KEY);
+
+	piLock (SYSTEM_FLAGS_KEY);
+	flags_juego |= FLAG_SHOOT_TIMEOUT; //Activa el flag de final de nota
+	piUnlock (SYSTEM_FLAGS_KEY);
 }

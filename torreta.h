@@ -22,6 +22,9 @@
 #define SERVO_INCREMENTO	1
 #define SERVO_MINIMO		9
 #define SERVO_MAXIMO		22
+#define SHOOT_TIMEOUT		5000
+#define PIN_DISPARO 7 //SON EL PINCHO 6
+#define PIN_IMPACTO 15
 
 typedef struct {
 	int inicio; // Valor correspondiente a la posicion inicial del servo
@@ -34,12 +37,12 @@ typedef struct {
 typedef struct {
 	TipoServo servo_x;
 	TipoServo servo_y;
-
-	// A completar por el alumno (declaracion del temporizador para control duracion disparo)
-	// ...
+	tmr_t* p_timer;
 } TipoTorreta;
 
 extern int flags_juego;
+extern int flags_player;
+
 
 // Prototipos de procedimientos de inicializacion de los objetos especificos
 void InicializaTorreta (TipoTorreta *p_torreta);
@@ -66,7 +69,8 @@ void DisparoIR (fsm_t* this);
 void FinalDisparoIR (fsm_t* this);
 void ImpactoDetectado (fsm_t* this);
 void FinalizaJuego (fsm_t* this);
-
+void impacto_recibido_isr (void);
+void timer_disparo_isr (union sigval value);
 // Prototipos de procedimientos de atencion a las interrupciones
 //static void timer_duracion_disparo_isr (union sigval value);
 

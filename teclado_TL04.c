@@ -212,9 +212,11 @@ int CompruebaColumnTimeout (fsm_t* this) {
 	switch(tecladoTL04[p_teclado->teclaPulsada.row][p_teclado->teclaPulsada.col]){
 			//p_teclado->teclaPulsada.col){
 		case '9': //disparo
-			piLock (PLAYER_FLAGS_KEY);
-			flags_player |= FLAG_START_DISPARO;
-			piUnlock (PLAYER_FLAGS_KEY);
+
+
+			piLock (SYSTEM_FLAGS_KEY);
+			flags_juego |= FLAG_TRIGGER_BUTTON;
+			piUnlock (SYSTEM_FLAGS_KEY);
 
 			piLock (STD_IO_BUFFER_KEY);
 			printf("Tecla 9 pulsada!\n");
@@ -304,10 +306,6 @@ int CompruebaColumnTimeout (fsm_t* this) {
 }
 
 int initialize(TipoTeclado *p_teclado) {
-	if (wiringPiSetupGpio() < 0) {
-	    fprintf (stderr, "Unable to setup wiringPi: %s\n", strerror (errno)) ;
-	    return 1 ;
-	}
 
 	// Comenzamos excitacion por primera columna
 	p_teclado->columna_actual = COL_1;
