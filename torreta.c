@@ -146,8 +146,8 @@ void MueveTorretaArriba (fsm_t* this) {
 
 	flags_juego &= (~FLAG_JOYSTICK_UP);
 
-	if(p_torreta->servo_y.posicion - p_torreta->servo_y.incremento >= p_torreta->servo_y.minimo) {
-		p_torreta->servo_y.posicion = p_torreta->servo_y.posicion - p_torreta->servo_y.incremento;
+	if(p_torreta->servo_y.posicion + p_torreta->servo_y.incremento <= p_torreta->servo_y.maximo) {
+		p_torreta->servo_y.posicion = p_torreta->servo_y.posicion + p_torreta->servo_y.incremento;
 
 		softPwmWrite(SERVOY_PIN, p_torreta->servo_y.posicion);
 
@@ -162,8 +162,8 @@ void MueveTorretaAbajo (fsm_t* this) {
 
 	flags_juego &= (~FLAG_JOYSTICK_DOWN);
 
-	if(p_torreta->servo_y.posicion + p_torreta->servo_y.incremento <= p_torreta->servo_y.maximo) {
-		p_torreta->servo_y.posicion = p_torreta->servo_y.posicion + p_torreta->servo_y.incremento;
+	if(p_torreta->servo_y.posicion - p_torreta->servo_y.incremento >= p_torreta->servo_y.minimo) {
+		p_torreta->servo_y.posicion = p_torreta->servo_y.posicion - p_torreta->servo_y.incremento;
 
 		softPwmWrite(SERVOY_PIN, p_torreta->servo_y.posicion);
 
@@ -178,8 +178,8 @@ void MueveTorretaIzquierda (fsm_t* this) {
 
 	flags_juego &= (~FLAG_JOYSTICK_LEFT);
 
-	if(p_torreta->servo_x.posicion - p_torreta->servo_x.incremento >= p_torreta->servo_x.minimo) {
-		p_torreta->servo_x.posicion = p_torreta->servo_x.posicion - p_torreta->servo_x.incremento;
+	if(p_torreta->servo_x.posicion + p_torreta->servo_x.incremento <= p_torreta->servo_x.maximo) {
+			p_torreta->servo_x.posicion = p_torreta->servo_x.posicion + p_torreta->servo_x.incremento;
 
 		softPwmWrite(SERVOX_PIN, p_torreta->servo_x.posicion);
 
@@ -194,8 +194,9 @@ void MueveTorretaDerecha (fsm_t* this) {
 
 	flags_juego &= (~FLAG_JOYSTICK_RIGHT);
 
-	if(p_torreta->servo_x.posicion + p_torreta->servo_x.incremento <= p_torreta->servo_x.maximo) {
-		p_torreta->servo_x.posicion = p_torreta->servo_x.posicion + p_torreta->servo_x.incremento;
+	if(p_torreta->servo_x.posicion - p_torreta->servo_x.incremento >= p_torreta->servo_x.minimo) {
+			p_torreta->servo_x.posicion = p_torreta->servo_x.posicion - p_torreta->servo_x.incremento;
+
 
 		softPwmWrite(SERVOX_PIN, p_torreta->servo_x.posicion);
 
