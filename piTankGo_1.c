@@ -41,9 +41,6 @@ int ConfiguraSistema (TipoSistema *p_sistema) { //Configuramos el sistema del pu
 			return -1;
 	}
 
-	//Establecemos pin 17 a 5V(HIGH)
-	pinMode(17,OUTPUT);
-	digitalWrite (17, HIGH);
 
 	//Establecemos pin 23 como salida y lo usamos para reproducir las notas de los efectos
 	pinMode(23,OUTPUT);
