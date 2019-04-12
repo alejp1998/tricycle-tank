@@ -14,7 +14,7 @@
 
 #include "piTankGoLib.h"
 
-#define	SERVOX_PIN			13
+#define	SERVOX_PIN			22
 #define	SERVOY_PIN			18
 
 #define SERVO_PWM_RANGE		400 // 100 * 400 = 40,000 µS = 40 ms // 25 Hz
