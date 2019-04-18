@@ -10,20 +10,11 @@
 
 #define CLK_MS 5
 
-// DURACION DISPARO IR
-#define SHOOTING_PERIOD 0
-
 // CLAVES PARA MUTEX
 // ATENCION: Valores a modificar por el alumno
 #define	SYSTEM_FLAGS_KEY	1
 #define	PLAYER_FLAGS_KEY	2
 #define	STD_IO_BUFFER_KEY	3
-
-//#define JOY_PIN_UP	0
-//#define JOY_PIN_DOWN	0
-//#define JOY_PIN_LEFT	0
-//#define JOY_PIN_RIGHT	0
-//#define JOY_PIN_CENTER 0
 
 // Distribucion de pines GPIO empleada para el enlace IR
 // ATENCION: Valores a modificar por el alumno
@@ -33,11 +24,6 @@
 // Distribucion de pines GPIO empleada para la reproducción de efectos
 // ATENCION: Valores a modificar por el alumno
 #define PLAYER_PWM_PIN 	0
-
-// Distribucion de pines GPIO empleada para el control de los servos
-// ATENCION: Valores a modificar por el alumno
-#define	SERVO_VERTICAL_PIN		0
-#define	SERVO_HORIZONTAL_PIN	0
 
 // FLAGS FSM CONTROL DE JUEGO Y TORRETA
 // ATENCION: Valores a modificar por el alumno
@@ -58,6 +44,12 @@
 #define FLAG_PLAYER_STOP 		0x04
 #define FLAG_PLAYER_END			0x08
 #define FLAG_NOTA_TIMEOUT		0x10
+//Flags de las ruedas
+#define FLAG_AVANZAR			0x20
+#define FLAG_RETROCEDER			0x40
+#define FLAG_DERECHA			0x80
+#define FLAG_IZQUIERDA			0x100
+#define FLAG_RUEDA_TIMEOUT		0x200
 
 enum interruption_sources {
 	TARGET_ISR,
@@ -65,11 +57,6 @@ enum interruption_sources {
 	TECLADO_FILA_2,
 	TECLADO_FILA_3,
 	TECLADO_FILA_4,
-	//JOYSTICK_UP_ISR,
-	//JOYSTICK_DOWN_ISR,
-	//JOYSTICK_LEFT_ISR,
-	//JOYSTICK_RIGHT_ISR,
-	//JOYSTICK_CENTER_ISR
 };
 
 extern int flags_system;

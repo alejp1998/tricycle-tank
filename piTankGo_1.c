@@ -46,17 +46,13 @@ int ConfiguraSistema (TipoSistema *p_sistema) { //Configuramos el sistema del pu
 	pinMode(23,OUTPUT);
 	softToneCreate(23);
 	softToneWrite (23,0);
-	//...
-	//Configurar interrupciones externas de pines GPIO
-	//Configurar las interrupciones a usar(temporizador)
-	//Crear threads adicionales necesarios para el sistema
+
 	return result;
 }
 
 // int InicializaSistema (TipoSistema *p_sistema): procedimiento de inicializacion del sistema.
 // la inicializacion de los diferentes elementos de los que consta nuestro sistema,
 // la torreta, los efectos, etc.
-// igualmente arrancará el thread de exploración del teclado del PC
 int InicializaSistema (TipoSistema *p_sistema) { //Inicializamos el sistema y sus atributos(player...)
 	int result = 0;
 	//Inicializamos los efectos dentro del objeto player
@@ -71,6 +67,9 @@ int InicializaSistema (TipoSistema *p_sistema) { //Inicializamos el sistema y su
 
 	//Inicializamos el objeto servo
 	InicializaTorreta (&p_sistema->torreta);
+
+	//Inicializamos el objeto ruedas
+	InicializaRuedas (&p_sistema->ruedas);
 
 	return result;
 }
@@ -124,6 +123,19 @@ int main ()
 			{-1, NULL, -1, NULL },
 	};
 
+	//Control ruedas
+	fsm_trans_t ruedas[] = {
+			{PARADO, CompruebaAvanzar, AVANZANDO, Avanzar },
+			{AVANZANDO, CompruebaParado, PARADO, Parado },
+			{PARADO, CompruebaRetroceder, RETROCEDIENDO, Retroceder },
+			{RETROCEDIENDO, CompruebaParado, PARADO, Parado },
+			{PARADO, CompruebaDerecha, GIRANDODCHA, GirarDerecha },
+			{GIRANDODCHA, CompruebaParado, PARADO, Parado },
+			{PARADO, CompruebaIzquierda, GIRANDOIZQ, GirarIzquierda },
+			{GIRANDOIZQ, CompruebaParado, PARADO, Parado },
+			{-1,NULL,-1,NULL}
+	};
+
 	//Control torreta
 	fsm_trans_t torreta[] = {
 			{ WAIT_START, CompruebaComienzo, WAIT_MOVE, ComienzaSistema },
@@ -147,6 +159,7 @@ int main ()
 	fsm_t* player_fsm = fsm_new (WAIT_START, reproductor, &(sistema.player));
 	fsm_t* columns_fsm = fsm_new (KEY_COL_1, columns, &teclado);
 	fsm_t* keypad_fsm = fsm_new (KEY_WAITING, keypad, &teclado);
+	fsm_t* ruedas_fsm = fsm_new (PARADO, ruedas, &(sistema.ruedas));
 	fsm_t* torreta_fsm = fsm_new (WAIT_MOVE, torreta, &(sistema.torreta));
 
 	//Valor inicial de next
@@ -157,6 +170,7 @@ int main ()
 		fsm_fire (player_fsm);
 		fsm_fire (columns_fsm);
 		fsm_fire (keypad_fsm);
+		fsm_fire (ruedas_fsm);
 		fsm_fire (torreta_fsm);
 
 		//Se actualizan las maquinas de estados cada CLK_MS
