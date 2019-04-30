@@ -71,6 +71,7 @@ int CompruebaIzquierda(fsm_t* this){
 //FUNCIONES DE SALIDA O ACCION
 
 void Parado(fsm_t* this){
+	flags_player &= ~FLAG_RUEDA_TIMEOUT;
 	TipoRuedas *p_ruedas;
 	p_ruedas = (TipoRuedas*)(this->user_data);
 
@@ -81,6 +82,7 @@ void Parado(fsm_t* this){
 }
 
 void Avanzar(fsm_t* this){
+	flags_player &= ~FLAG_AVANZAR;
 	TipoRuedas *p_ruedas;
 	p_ruedas = (TipoRuedas*)(this->user_data);
 
@@ -96,6 +98,7 @@ void Avanzar(fsm_t* this){
 }
 
 void Retroceder(fsm_t* this){
+	flags_player &= ~FLAG_RETROCEDER;
 	TipoRuedas *p_ruedas;
 	p_ruedas = (TipoRuedas*)(this->user_data);
 
@@ -111,6 +114,7 @@ void Retroceder(fsm_t* this){
 }
 
 void GirarDerecha(fsm_t* this){
+	flags_player &= ~FLAG_DERECHA;
 	TipoRuedas *p_ruedas;
 	p_ruedas = (TipoRuedas*)(this->user_data);
 
@@ -126,6 +130,7 @@ void GirarDerecha(fsm_t* this){
 }
 
 void GirarIzquierda(fsm_t* this){
+	flags_player &= ~FLAG_IZQUIERDA;
 	TipoRuedas *p_ruedas;
 	p_ruedas = (TipoRuedas*)(this->user_data);
 

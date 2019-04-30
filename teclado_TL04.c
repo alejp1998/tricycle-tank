@@ -212,28 +212,12 @@ int CompruebaColumnTimeout (fsm_t* this) {
 	switch(tecladoTL04[p_teclado->teclaPulsada.row][p_teclado->teclaPulsada.col]){
 			//p_teclado->teclaPulsada.col){
 		case '9': //disparo
-
-
 			piLock (SYSTEM_FLAGS_KEY);
 			flags_juego |= FLAG_TRIGGER_BUTTON;
 			piUnlock (SYSTEM_FLAGS_KEY);
 
 			piLock (STD_IO_BUFFER_KEY);
 			printf("Tecla 9 pulsada!\n");
-			fflush(stdout);
-			piUnlock (STD_IO_BUFFER_KEY);
-
-			p_teclado->teclaPulsada.row = -1;
-			p_teclado->teclaPulsada.col = -1;
-			break;
-
-		case '1':
-			piLock (PLAYER_FLAGS_KEY);
-			flags_player |= FLAG_START_IMPACTO;
-			piUnlock (PLAYER_FLAGS_KEY);
-
-			piLock (STD_IO_BUFFER_KEY);
-			printf("Tecla 1 pulsada!\n");
 			fflush(stdout);
 			piUnlock (STD_IO_BUFFER_KEY);
 
@@ -283,6 +267,35 @@ int CompruebaColumnTimeout (fsm_t* this) {
 			printf("\n[PULSACION][SERVO DOWN!!!!]\n");
 			fflush(stdout);
 			piUnlock (STD_IO_BUFFER_KEY);
+			break;
+
+		case '1':
+			piLock (SYSTEM_FLAGS_KEY);
+			flags_player |= FLAG_AVANZAR;
+			piUnlock (SYSTEM_FLAGS_KEY);
+
+			piLock (STD_IO_BUFFER_KEY);
+			printf("\n[PULSACION][SERVO DOWN!!!!]\n");
+			fflush(stdout);
+			piUnlock (STD_IO_BUFFER_KEY);
+			break;
+
+		case '2':
+			piLock (PLAYER_FLAGS_KEY);
+			flags_player |= FLAG_RETROCEDER;
+			piUnlock (PLAYER_FLAGS_KEY);
+			break;
+
+		case '4':
+			piLock (PLAYER_FLAGS_KEY);
+			flags_player |= FLAG_IZQUIERDA;
+			piUnlock (PLAYER_FLAGS_KEY);
+			break;
+
+		case '5':
+			piLock (PLAYER_FLAGS_KEY);
+			flags_player |= FLAG_DERECHA;
+			piUnlock (PLAYER_FLAGS_KEY);
 			break;
 
 		default:
