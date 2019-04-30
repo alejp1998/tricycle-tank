@@ -16,13 +16,13 @@
 
 extern int flags_player;
 
-#define	RUEDA1_PIN			19 //Salidas a configurar como PWM
-#define	RUEDA2_PIN			26
+#define	RUEDA1_PIN			4 //Salidas a configurar como PWM
+#define	RUEDA2_PIN			7
 
 #define RUEDA_PWM_RANGE		400 //Rango del PWM
 
-#define CLOCKWISE 7 //Maxima velocidad hacia clockwise
-#define COUNTERCLOCKWISE 23 //Maxima hacia counterclockwise
+#define CLOCKWISE 8 //Maxima velocidad hacia clockwise
+#define COUNTERCLOCKWISE 22 //Maxima hacia counterclockwise
 #define STOPPED 15 //Ruedas paradas
 #define TIEMPOMOV 300 //0.3 segundos por mov
 
