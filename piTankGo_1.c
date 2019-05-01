@@ -16,9 +16,7 @@ int frecuenciasImpacto[32] = {97,109,79,121,80,127,123,75,119,96,71,101,98,113,9
 int tiemposImpacto[32] = {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10};
 
 int flags_juego = 0;
-int flags_player = 0; //para que empiece en wait next
-
-
+int flags_player = 0;
 
 //------------------------------------------------------
 // FUNCIONES DE CONFIGURACION/INICIALIZACION
@@ -62,9 +60,6 @@ int InicializaSistema (TipoSistema *p_sistema) { //Inicializamos el sistema y su
 	//Inicializamos el objeto player p_sistema->player es el objeto player bajo el puntero al sistema
 	InicializaPlayer(&(p_sistema->player));
 
-	//Inicializamos el objeto teclado, que controla el teclado matricial(tecla pulsada)
-	initialize(&teclado);
-
 	//Inicializamos el objeto servo
 	InicializaTorreta (&p_sistema->torreta);
 
@@ -72,6 +67,32 @@ int InicializaSistema (TipoSistema *p_sistema) { //Inicializamos el sistema y su
 	InicializaRuedas (&p_sistema->ruedas);
 
 	return result;
+}
+
+PI_THREAD (thread_xbox360) {
+	char teclaXbox;
+	while(1) {
+		delay(10); // Wiring Pi function: pauses program execution for at least 10 ms
+		*fp = FILE *fopen("xbox360",w);//Opens the file in writing mode
+		teclaXbox = getc(*fp);//Reads char from the file
+		fclose(*fp);//Closes the file
+
+		switch(teclaXbox) {
+			case 'A':
+				printf("Boton A pulsado!\n");
+				fflush(stdout);
+				break;
+
+			case 'q':
+				exit(0);//When pressing start key
+				break;
+
+			default:
+				//No keys pressed
+				break;
+		}
+	
+	}
 }
 
 //Funcion de retardo que se encarga de sincronizar el automata
@@ -99,27 +120,12 @@ int main ()
 
 	//Reproductor de efectos
 	fsm_trans_t reproductor[] = {
-		{ WAIT_START, CompruebaStartDisparo, WAIT_NEXT, InicializaPlayDisparo },
-		{ WAIT_START, CompruebaStartImpacto, WAIT_NEXT, InicializaPlayImpacto },
-		{ WAIT_NEXT, CompruebaStartImpacto, WAIT_NEXT, InicializaPlayImpacto },
-		{ WAIT_NEXT, CompruebaNotaTimeout, WAIT_END, ActualizaPlayer },
-		{ WAIT_END, CompruebaFinalEfecto, WAIT_START, FinalEfecto },
-		{ WAIT_END, CompruebaNuevaNota, WAIT_NEXT, ComienzaNuevaNota},
-		{-1, NULL, -1, NULL },
-	};
-
-	//Excitacion columnas teclado matricial
-	fsm_trans_t columns[] = {
-			{ KEY_COL_1, CompruebaColumnTimeout, KEY_COL_2, col_2 },
-			{ KEY_COL_2, CompruebaColumnTimeout, KEY_COL_3, col_3 },
-			{ KEY_COL_3, CompruebaColumnTimeout, KEY_COL_4, col_4 },
-			{ KEY_COL_4, CompruebaColumnTimeout, KEY_COL_1, col_1 },
-			{-1, NULL, -1, NULL },
-	};
-
-	//Prevencion de rebotes
-	fsm_trans_t keypad[] = {
-			{ KEY_WAITING, key_pressed, KEY_WAITING, process_key},
+			{ WAIT_START, CompruebaStartDisparo, WAIT_NEXT, InicializaPlayDisparo },
+			{ WAIT_START, CompruebaStartImpacto, WAIT_NEXT, InicializaPlayImpacto },
+			{ WAIT_NEXT, CompruebaStartImpacto, WAIT_NEXT, InicializaPlayImpacto },
+			{ WAIT_NEXT, CompruebaNotaTimeout, WAIT_END, ActualizaPlayer },
+			{ WAIT_END, CompruebaFinalEfecto, WAIT_START, FinalEfecto },
+			{ WAIT_END, CompruebaNuevaNota, WAIT_NEXT, ComienzaNuevaNota},
 			{-1, NULL, -1, NULL },
 	};
 
@@ -168,8 +174,6 @@ int main ()
 	//Bucle infinito que maneja las maquinas de estado del sistema
 	while (1) {
 		fsm_fire (player_fsm);
-		fsm_fire (columns_fsm);
-		fsm_fire (keypad_fsm);
 		fsm_fire (ruedas_fsm);
 		fsm_fire (torreta_fsm);
 

@@ -58,6 +58,6 @@ int InicializaSistema (TipoSistema *p_sistema);
 //------------------------------------------------------
 // FUNCIONES LIGADAS A THREADS ADICIONALES
 //------------------------------------------------------
-PI_THREAD(thread_explora_teclado_PC);
+PI_THREAD(thread_xbox360);
 
 #endif /* _PITANKGO_1_H_ */
