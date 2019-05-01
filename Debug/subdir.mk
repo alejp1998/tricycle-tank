@@ -5,33 +5,30 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../fsm.c \
-../kbhit.c \
 ../piTankGo_1.c \
 ../player.c \
 ../ruedas.c \
-../teclado_TL04.c \
 ../tmr.c \
-../torreta.c 
+../torreta.c \
+../xbox360.c 
 
 OBJS += \
 ./fsm.o \
-./kbhit.o \
 ./piTankGo_1.o \
 ./player.o \
 ./ruedas.o \
-./teclado_TL04.o \
 ./tmr.o \
-./torreta.o 
+./torreta.o \
+./xbox360.o 
 
 C_DEPS += \
 ./fsm.d \
-./kbhit.d \
 ./piTankGo_1.d \
 ./player.d \
 ./ruedas.d \
-./teclado_TL04.d \
 ./tmr.d \
-./torreta.d 
+./torreta.d \
+./xbox360.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

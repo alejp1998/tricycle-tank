@@ -66,33 +66,10 @@ int InicializaSistema (TipoSistema *p_sistema) { //Inicializamos el sistema y su
 	//Inicializamos el objeto ruedas
 	InicializaRuedas (&p_sistema->ruedas);
 
+	//Inicializamos mando xbox360
+	InicializaXbox360 (&p_sistema->mando);
+
 	return result;
-}
-
-PI_THREAD (thread_xbox360) {
-	char teclaXbox;
-	while(1) {
-		delay(10); // Wiring Pi function: pauses program execution for at least 10 ms
-		*fp = FILE *fopen("xbox360",w);//Opens the file in writing mode
-		teclaXbox = getc(*fp);//Reads char from the file
-		fclose(*fp);//Closes the file
-
-		switch(teclaXbox) {
-			case 'A':
-				printf("Boton A pulsado!\n");
-				fflush(stdout);
-				break;
-
-			case 'q':
-				exit(0);//When pressing start key
-				break;
-
-			default:
-				//No keys pressed
-				break;
-		}
-	
-	}
 }
 
 //Funcion de retardo que se encarga de sincronizar el automata
@@ -117,6 +94,12 @@ int main ()
 
 	//TRANSICIONES MAQUINAS DE ESTADOS
 	//ESTADO DE PARTIDA , COMPROBACION DE FLAG, ESTADO FINAL(si se cumple comprobacion), FUNCION A ejecutar
+
+	//Control teclas pulsadas
+	fsm_trans_t xbox360[] = {
+				{ ESPERAPULS, CompruebaPulsada, ESPERAPULS, Pulsada},
+				{-1, NULL, -1, NULL },
+	};
 
 	//Reproductor de efectos
 	fsm_trans_t reproductor[] = {
@@ -162,9 +145,8 @@ int main ()
 
 	//Creacion de las maquinas de estados
 	//ESTADO INICIAL, LISTA TRANSICIONES, PUNTERO ASOCIADO A LA MAQUINA
+	fsm_t* xbox360_fsm = fsm_new (ESPERAPULS, xbox360, &(sistema.mando));
 	fsm_t* player_fsm = fsm_new (WAIT_START, reproductor, &(sistema.player));
-	fsm_t* columns_fsm = fsm_new (KEY_COL_1, columns, &teclado);
-	fsm_t* keypad_fsm = fsm_new (KEY_WAITING, keypad, &teclado);
 	fsm_t* ruedas_fsm = fsm_new (PARADO, ruedas, &(sistema.ruedas));
 	fsm_t* torreta_fsm = fsm_new (WAIT_MOVE, torreta, &(sistema.torreta));
 
@@ -173,6 +155,7 @@ int main ()
 
 	//Bucle infinito que maneja las maquinas de estado del sistema
 	while (1) {
+		fsm_fire (xbox360_fsm);
 		fsm_fire (player_fsm);
 		fsm_fire (ruedas_fsm);
 		fsm_fire (torreta_fsm);

@@ -8,22 +8,13 @@
 #include "fsm.h"
 #include "tmr.h"
 
-#define CLK_MS 5
+#define CLK_MS 10
 
 // CLAVES PARA MUTEX
 // ATENCION: Valores a modificar por el alumno
 #define	SYSTEM_FLAGS_KEY	1
 #define	PLAYER_FLAGS_KEY	2
 #define	STD_IO_BUFFER_KEY	3
-
-// Distribucion de pines GPIO empleada para el enlace IR
-// ATENCION: Valores a modificar por el alumno
-#define	IR_TX_PIN		0
-#define	IR_RX_PIN		0
-
-// Distribucion de pines GPIO empleada para la reproducción de efectos
-// ATENCION: Valores a modificar por el alumno
-#define PLAYER_PWM_PIN 	0
 
 // FLAGS FSM CONTROL DE JUEGO Y TORRETA
 // ATENCION: Valores a modificar por el alumno
@@ -50,14 +41,6 @@
 #define FLAG_DERECHA			0x80
 #define FLAG_IZQUIERDA			0x100
 #define FLAG_RUEDA_TIMEOUT		0x200
-
-enum interruption_sources {
-	TARGET_ISR,
-	TECLADO_FILA_1,
-	TECLADO_FILA_2,
-	TECLADO_FILA_3,
-	TECLADO_FILA_4,
-};
 
 extern int flags_system;
 extern int flags_player;

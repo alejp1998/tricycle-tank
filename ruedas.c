@@ -31,7 +31,7 @@ void timer_rueda_isr(union sigval value){
 	piUnlock(PLAYER_FLAGS_KEY);
 
 	piLock(STD_IO_BUFFER_KEY);
-	printf("ACABA MOVIMIENTO");
+	printf("ACABA MOVIMIENTO\n");
 	fflush(stdout);
 	piUnlock(STD_IO_BUFFER_KEY);
 }
@@ -93,7 +93,7 @@ void Avanzar(fsm_t* this){
 
 	tmr_startms(p_ruedas->p_timer,TIEMPOMOV);
 
-	printf("RUEDAS AVANZAN");
+	printf("RUEDAS AVANZA\n");
 	fflush(stdout);
 }
 
@@ -109,7 +109,7 @@ void Retroceder(fsm_t* this){
 
 	tmr_startms(p_ruedas->p_timer,TIEMPOMOV);
 
-	printf("RUEDAS RETROCEDEN");
+	printf("RUEDAS RETROCEDEN\n");
 	fflush(stdout);
 }
 
@@ -125,7 +125,7 @@ void GirarDerecha(fsm_t* this){
 
 	tmr_startms(p_ruedas->p_timer,TIEMPOMOV);
 
-	printf("RUEDAS GIRAN DERECHA");
+	printf("RUEDAS GIRAN DERECHA\n");
 	fflush(stdout);
 }
 
@@ -141,6 +141,6 @@ void GirarIzquierda(fsm_t* this){
 
 	tmr_startms(p_ruedas->p_timer,TIEMPOMOV);
 
-	printf("RUEDAS GIRAN IZQUIERDA");
+	printf("RUEDAS GIRAN IZQUIERDA\n");
 	fflush(stdout);
 }

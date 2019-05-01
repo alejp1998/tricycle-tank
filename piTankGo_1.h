@@ -12,12 +12,11 @@
 #include <stdlib.h>
 #include <wiringPi.h>
 #include "fsm.h" // para poder crear y ejecutar la maquina de estados
-#include "kbhit.h" // Para poder detectar teclas pulsadas sin bloqueo y leer las teclas pulsadas
 #include "player.h"
 #include "torreta.h"
 #include "torreta.h"
 #include "ruedas.h"
-#include "teclado_TL04.h"
+#include "xbox360.h"
 
 // Posibles estados de las FSMs
 enum fsm_state {
@@ -36,15 +35,15 @@ enum fsm_state {
 	AVANZANDO,
 	RETROCEDIENDO,
 	GIRANDODCHA,
-	GIRANDOIZQ
+	GIRANDOIZQ,
+	ESPERAPULS
 };
 
 typedef struct {
 	TipoTorreta torreta; // Objeto para el control de la torreta
 	TipoRuedas ruedas; //Control de movimientos del tanque
 	TipoPlayer player; // Reproductor de efectos
-	TipoTeclado teclado; //Investigador del teclado
-	char teclaPulsada;  // Variable que almacena la ultima tecla pulsada
+	TipoXbox360 mando;
 	int debug; // Variable que habilita o deshabilita la impresion de mensajes por salida estandar
 
 } TipoSistema;
