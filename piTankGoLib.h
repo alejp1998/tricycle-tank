@@ -36,11 +36,8 @@
 #define FLAG_PLAYER_END			0x08
 #define FLAG_NOTA_TIMEOUT		0x10
 //Flags de las ruedas
-#define FLAG_AVANZAR			0x20
-#define FLAG_RETROCEDER			0x40
-#define FLAG_DERECHA			0x80
-#define FLAG_IZQUIERDA			0x100
-#define FLAG_RUEDA_TIMEOUT		0x200
+#define FLAG_MOVIMIENTO			0x20
+#define FLAG_PARADO				0x40
 
 extern int flags_system;
 extern int flags_player;

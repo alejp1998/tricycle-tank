@@ -18,129 +18,56 @@ void InicializaRuedas(TipoRuedas *p_ruedas){
 	softPwmWrite(RUEDA1_PIN,p_ruedas->parado);
 	softPwmCreate(RUEDA2_PIN,p_ruedas->parado,RUEDA_PWM_RANGE);
 	softPwmWrite(RUEDA2_PIN,p_ruedas->parado);
-
-	//Inicializamos temporizador de movimientos
-	p_ruedas->p_timer = tmr_new(timer_rueda_isr);
-}
-
-
-//FUNCIONES ATENCION INTERRUPCIONES
-void timer_rueda_isr(union sigval value){
-	piLock (PLAYER_FLAGS_KEY);
-	flags_player |= FLAG_RUEDA_TIMEOUT;
-	piUnlock(PLAYER_FLAGS_KEY);
-
-	piLock(STD_IO_BUFFER_KEY);
-	printf("ACABA MOVIMIENTO\n");
-	fflush(stdout);
-	piUnlock(STD_IO_BUFFER_KEY);
 }
 
 
 //FUNCIONES DE COMPROBACION
 int CompruebaParado(fsm_t* this){
 	int result = 0;
-	result = (flags_player & FLAG_RUEDA_TIMEOUT);
+	result = (flags_player & FLAG_PARADO);
 	return result;
 }
 
-int CompruebaAvanzar(fsm_t* this){
+int CompruebaMovimiento(fsm_t* this){
 	int result = 0;
-	result = (flags_player & FLAG_AVANZAR);
-	return result;
-}
-
-int CompruebaRetroceder(fsm_t* this){
-	int result = 0;
-	result = (flags_player & FLAG_RETROCEDER);
-	return result;
-}
-
-int CompruebaDerecha(fsm_t* this){
-	int result = 0;
-	result = (flags_player & FLAG_DERECHA);
-	return result;
-}
-
-int CompruebaIzquierda(fsm_t* this){
-	int result = 0;
-	result = (flags_player & FLAG_IZQUIERDA);
+	result = (flags_player & FLAG_MOVIMIENTO);
 	return result;
 }
 
 //FUNCIONES DE SALIDA O ACCION
 
 void Parado(fsm_t* this){
-	flags_player &= ~FLAG_RUEDA_TIMEOUT;
+	flags_player &= ~FLAG_PARADO;
 	TipoRuedas *p_ruedas;
 	p_ruedas = (TipoRuedas*)(this->user_data);
 
 	p_ruedas->rueda1 = STOPPED;
 	p_ruedas->rueda2 = STOPPED;
+
 	softPwmWrite(RUEDA1_PIN,p_ruedas->rueda1);
 	softPwmWrite(RUEDA2_PIN,p_ruedas->rueda2);
 }
 
-void Avanzar(fsm_t* this){
-	flags_player &= ~FLAG_AVANZAR;
+void Movimiento(fsm_t* this){
+	flags_player &= ~FLAG_MOVIMIENTO;
+
+	//Calculate speed of wheels
+	TipoXbox360 *p_xbox360;
+	p_xbox360 = (TipoXbox360*)(this->user_data);
 	TipoRuedas *p_ruedas;
 	p_ruedas = (TipoRuedas*)(this->user_data);
 
-	p_ruedas->rueda1 = CLOCKWISE;
-	p_ruedas->rueda2 = COUNTERCLOCKWISE;
+	if(p_xbox360->posX == 0.0 || p_xbox360->posY == 0.0){
+		p_ruedas->rueda1 = (int) STOPPED - RANGE*(-p_xbox360->posX + p_xbox360->posY);
+		p_ruedas->rueda2 = (int) STOPPED - RANGE*(+p_xbox360->posX + p_xbox360->posY);
+	}else{
+		p_ruedas->rueda1 = STOPPED;
+		p_ruedas->rueda2 = STOPPED;
+	}
+
 	softPwmWrite(RUEDA1_PIN,p_ruedas->rueda1);
 	softPwmWrite(RUEDA2_PIN,p_ruedas->rueda2);
 
-	tmr_startms(p_ruedas->p_timer,TIEMPOMOV);
-
-	printf("RUEDAS AVANZA\n");
-	fflush(stdout);
-}
-
-void Retroceder(fsm_t* this){
-	flags_player &= ~FLAG_RETROCEDER;
-	TipoRuedas *p_ruedas;
-	p_ruedas = (TipoRuedas*)(this->user_data);
-
-	p_ruedas->rueda1 = COUNTERCLOCKWISE;
-	p_ruedas->rueda2 = CLOCKWISE;
-	softPwmWrite(RUEDA1_PIN,p_ruedas->rueda1);
-	softPwmWrite(RUEDA2_PIN,p_ruedas->rueda2);
-
-	tmr_startms(p_ruedas->p_timer,TIEMPOMOV);
-
-	printf("RUEDAS RETROCEDEN\n");
-	fflush(stdout);
-}
-
-void GirarDerecha(fsm_t* this){
-	flags_player &= ~FLAG_DERECHA;
-	TipoRuedas *p_ruedas;
-	p_ruedas = (TipoRuedas*)(this->user_data);
-
-	p_ruedas->rueda1 = COUNTERCLOCKWISE;
-	p_ruedas->rueda2 = COUNTERCLOCKWISE;
-	softPwmWrite(RUEDA1_PIN,p_ruedas->rueda1);
-	softPwmWrite(RUEDA2_PIN,p_ruedas->rueda2);
-
-	tmr_startms(p_ruedas->p_timer,TIEMPOMOV);
-
-	printf("RUEDAS GIRAN DERECHA\n");
-	fflush(stdout);
-}
-
-void GirarIzquierda(fsm_t* this){
-	flags_player &= ~FLAG_IZQUIERDA;
-	TipoRuedas *p_ruedas;
-	p_ruedas = (TipoRuedas*)(this->user_data);
-
-	p_ruedas->rueda1 = CLOCKWISE;
-	p_ruedas->rueda2 = CLOCKWISE;
-	softPwmWrite(RUEDA1_PIN,p_ruedas->rueda1);
-	softPwmWrite(RUEDA2_PIN,p_ruedas->rueda2);
-
-	tmr_startms(p_ruedas->p_timer,TIEMPOMOV);
-
-	printf("RUEDAS GIRAN IZQUIERDA\n");
+	printf("MOVIMIENTO RUEDAS: RUEDA1( %d ) RUEDA2 ( %d ) \n", p_ruedas->rueda1 , p_ruedas->rueda2);
 	fflush(stdout);
 }

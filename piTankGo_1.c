@@ -114,14 +114,9 @@ int main ()
 
 	//Control ruedas
 	fsm_trans_t ruedas[] = {
-			{PARADO, CompruebaAvanzar, AVANZANDO, Avanzar },
-			{AVANZANDO, CompruebaParado, PARADO, Parado },
-			{PARADO, CompruebaRetroceder, RETROCEDIENDO, Retroceder },
-			{RETROCEDIENDO, CompruebaParado, PARADO, Parado },
-			{PARADO, CompruebaDerecha, GIRANDODCHA, GirarDerecha },
-			{GIRANDODCHA, CompruebaParado, PARADO, Parado },
-			{PARADO, CompruebaIzquierda, GIRANDOIZQ, GirarIzquierda },
-			{GIRANDOIZQ, CompruebaParado, PARADO, Parado },
+			{PARADO, CompruebaMovimiento, MOVIMIENTO, Movimiento },
+			{MOVIMIENTO, CompruebaMovimiento, MOVIMIENTO, Movimiento },
+			{MOVIMIENTO, CompruebaParado, PARADO, Parado },
 			{-1,NULL,-1,NULL}
 	};
 

@@ -8,7 +8,7 @@
 #include "xbox360.h"
 
 void InicializaXbox360(TipoXbox360* p_xbox360){
-	p_xbox360->teclaXbox = '0';
+	p_xbox360->teclaXbox = 'N';
 }
 
 int CompruebaPulsada(fsm_t* this){
@@ -18,10 +18,22 @@ int CompruebaPulsada(fsm_t* this){
 void Pulsada(fsm_t* this){
 	TipoXbox360 *p_xbox360;
 	p_xbox360 = (TipoXbox360*)(this->user_data);
-	FILE* fp;
-	fp = fopen("xbox360.txt","r");//Opens the file in reading mode
-	p_xbox360->teclaXbox = getc(fp);//Reads char from the file
-	fclose(fp);
+	//Wheels speed reading
+	FILE* f2;
+	f2 = fopen("xbox360-2.txt","r");//Opens the file in reading mode
+	fscanf(f2,"%lf", &(p_xbox360->posX));
+	fclose(f2);
+
+	FILE* f3;
+	f3 = fopen("xbox360-3.txt","r");//Opens the file in reading mode
+	fscanf(f3,"%lf", &(p_xbox360->posY));
+	fclose(f3);
+
+	//Keys reading
+	FILE* f1;
+	f1 = fopen("xbox360-1.txt","r");//Opens the file in reading mode
+	p_xbox360->teclaXbox = getc(f1);//Reads char from the file
+	fclose(f1);
 	switch(p_xbox360->teclaXbox){
 		case 'A': //disparo
 			piLock (SYSTEM_FLAGS_KEY);
@@ -29,12 +41,12 @@ void Pulsada(fsm_t* this){
 			piUnlock (SYSTEM_FLAGS_KEY);
 
 			piLock (STD_IO_BUFFER_KEY);
-			printf("Tecla 9 pulsada!\n");
+			printf("TECLA A PULSADA - PIUUUUUUUUUUUUUM!\n");
 			fflush(stdout);
 			piUnlock (STD_IO_BUFFER_KEY);
 			break;
 
-		case 'l':
+		case 'L':
 			piLock (SYSTEM_FLAGS_KEY);
 			flags_juego |= FLAG_JOYSTICK_LEFT;
 			piUnlock (SYSTEM_FLAGS_KEY);
@@ -45,7 +57,7 @@ void Pulsada(fsm_t* this){
 			piUnlock (STD_IO_BUFFER_KEY);
 			break;
 
-		case 'r':
+		case 'R':
 			piLock (SYSTEM_FLAGS_KEY);
 			flags_juego |= FLAG_JOYSTICK_RIGHT;
 			piUnlock (SYSTEM_FLAGS_KEY);
@@ -56,7 +68,7 @@ void Pulsada(fsm_t* this){
 			piUnlock (STD_IO_BUFFER_KEY);
 			break;
 
-		case 'u':
+		case 'U':
 			piLock (SYSTEM_FLAGS_KEY);
 			flags_juego |= FLAG_JOYSTICK_UP;
 			piUnlock (SYSTEM_FLAGS_KEY);
@@ -67,7 +79,7 @@ void Pulsada(fsm_t* this){
 			piUnlock (STD_IO_BUFFER_KEY);
 			break;
 
-		case 'd':
+		case 'D':
 			piLock (SYSTEM_FLAGS_KEY);
 			flags_juego |= FLAG_JOYSTICK_DOWN;
 			piUnlock (SYSTEM_FLAGS_KEY);
@@ -76,30 +88,6 @@ void Pulsada(fsm_t* this){
 			printf("\n[PULSACION][SERVO DOWN!!!!]\n");
 			fflush(stdout);
 			piUnlock (STD_IO_BUFFER_KEY);
-			break;
-
-		case 'U':
-			piLock (SYSTEM_FLAGS_KEY);
-			flags_player |= FLAG_AVANZAR;
-			piUnlock (SYSTEM_FLAGS_KEY);
-			break;
-
-		case 'D':
-			piLock (PLAYER_FLAGS_KEY);
-			flags_player |= FLAG_RETROCEDER;
-			piUnlock (PLAYER_FLAGS_KEY);
-			break;
-
-		case 'L':
-			piLock (PLAYER_FLAGS_KEY);
-			flags_player |= FLAG_IZQUIERDA;
-			piUnlock (PLAYER_FLAGS_KEY);
-			break;
-
-		case 'R':
-			piLock (PLAYER_FLAGS_KEY);
-			flags_player |= FLAG_DERECHA;
-			piUnlock (PLAYER_FLAGS_KEY);
 			break;
 		case 'N':
 			break;

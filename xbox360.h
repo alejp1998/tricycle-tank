@@ -20,6 +20,8 @@ extern int flags_player;
 //Almacena tecla pulsada en cada momento
 typedef struct {
 	char teclaXbox;
+	double posX;
+	double posY;
 }TipoXbox360;
 
 void InicializaXbox360(TipoXbox360* p_xbox360);
