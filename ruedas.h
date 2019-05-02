@@ -16,6 +16,7 @@
 #include "piTankGoLib.h"
 
 extern int flags_player;
+extern double posX, posY;
 
 #define	RUEDA1_PIN			18 //Salidas a configurar como PWM
 #define	RUEDA2_PIN			19

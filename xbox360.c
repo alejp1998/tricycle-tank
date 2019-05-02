@@ -7,8 +7,12 @@
 
 #include "xbox360.h"
 
+double posX,posY = 0.0;
+
 void InicializaXbox360(TipoXbox360* p_xbox360){
 	p_xbox360->teclaXbox = 'N';
+	p_xbox360->posX = 0.0;
+	p_xbox360->posY = 0.0;
 }
 
 int CompruebaPulsada(fsm_t* this){
@@ -18,6 +22,7 @@ int CompruebaPulsada(fsm_t* this){
 void Pulsada(fsm_t* this){
 	TipoXbox360 *p_xbox360;
 	p_xbox360 = (TipoXbox360*)(this->user_data);
+
 	//Wheels speed reading
 	FILE* f2;
 	f2 = fopen("xbox360-2.txt","r");//Opens the file in reading mode
@@ -28,6 +33,15 @@ void Pulsada(fsm_t* this){
 	f3 = fopen("xbox360-3.txt","r");//Opens the file in reading mode
 	fscanf(f3,"%lf", &(p_xbox360->posY));
 	fclose(f3);
+
+	if(p_xbox360->posX>=0.2 ||p_xbox360->posX<=-0.2 || p_xbox360->posY>=0.2 || p_xbox360->posY<=-0.2){
+		flags_player |= FLAG_MOVIMIENTO;
+	}else{
+		flags_player |= FLAG_PARADO;
+	}
+
+	posX = p_xbox360->posX;
+	posY = p_xbox360->posY;
 
 	//Keys reading
 	FILE* f1;

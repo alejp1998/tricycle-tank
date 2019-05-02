@@ -51,19 +51,11 @@ void Parado(fsm_t* this){
 void Movimiento(fsm_t* this){
 	flags_player &= ~FLAG_MOVIMIENTO;
 
-	//Calculate speed of wheels
-	TipoXbox360 *p_xbox360;
-	p_xbox360 = (TipoXbox360*)(this->user_data);
 	TipoRuedas *p_ruedas;
 	p_ruedas = (TipoRuedas*)(this->user_data);
 
-	if(p_xbox360->posX == 0.0 || p_xbox360->posY == 0.0){
-		p_ruedas->rueda1 = (int) STOPPED - RANGE*(-p_xbox360->posX + p_xbox360->posY);
-		p_ruedas->rueda2 = (int) STOPPED - RANGE*(+p_xbox360->posX + p_xbox360->posY);
-	}else{
-		p_ruedas->rueda1 = STOPPED;
-		p_ruedas->rueda2 = STOPPED;
-	}
+	p_ruedas->rueda1 = (int) (STOPPED + RANGE*(posX - posY));
+	p_ruedas->rueda2 = (int) (STOPPED + RANGE*(+posX + posY));
 
 	softPwmWrite(RUEDA1_PIN,p_ruedas->rueda1);
 	softPwmWrite(RUEDA2_PIN,p_ruedas->rueda2);
