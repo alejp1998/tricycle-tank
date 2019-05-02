@@ -16,6 +16,7 @@
 
 extern int flags_juego;
 extern int flags_player;
+extern int disparos;
 
 //Almacena tecla pulsada en cada momento
 typedef struct {

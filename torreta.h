@@ -23,7 +23,7 @@
 #define SERVO_MINIMO		9
 #define SERVO_MAXIMO		22
 #define SHOOT_TIMEOUT		300
-#define PIN_DISPARO 7 //SON EL PINCHO 6
+#define PIN_DISPARO 7
 #define PIN_IMPACTO 15
 
 typedef struct {
@@ -37,6 +37,7 @@ typedef struct {
 typedef struct {
 	TipoServo servo_x;
 	TipoServo servo_y;
+	int impactos;
 	tmr_t* p_timer;
 } TipoTorreta;
 

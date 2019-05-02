@@ -8,6 +8,7 @@
 #include "xbox360.h"
 
 double posX,posY = 0.0;
+int nrebotes = 0;
 
 void InicializaXbox360(TipoXbox360* p_xbox360){
 	p_xbox360->teclaXbox = 'N';
@@ -24,89 +25,87 @@ void Pulsada(fsm_t* this){
 	p_xbox360 = (TipoXbox360*)(this->user_data);
 
 	//Wheels speed reading
-	FILE* f2;
-	f2 = fopen("xbox360-2.txt","r");//Opens the file in reading mode
-	fscanf(f2,"%lf", &(p_xbox360->posX));
-	fclose(f2);
+	FILE* f1;
+	f1 = fopen("xbox360.txt","r");//Opens the file in reading mode
+	fscanf(f1, "%s %lf %lf" , &(p_xbox360->teclaXbox) , &(p_xbox360->posX) , &(p_xbox360->posY) );
+	fclose(f1);
 
-	FILE* f3;
-	f3 = fopen("xbox360-3.txt","r");//Opens the file in reading mode
-	fscanf(f3,"%lf", &(p_xbox360->posY));
-	fclose(f3);
-
-	if(p_xbox360->posX>=0.2 ||p_xbox360->posX<=-0.2 || p_xbox360->posY>=0.2 || p_xbox360->posY<=-0.2){
+	if(p_xbox360->posX>=0.2 || p_xbox360->posX<=-0.2 || p_xbox360->posY>=0.2 || p_xbox360->posY<=-0.2){
+		posX = p_xbox360->posX;
+		posY = p_xbox360->posY;
 		flags_player |= FLAG_MOVIMIENTO;
 	}else{
+		posX = 0.0;
+		posY = 0.0;
 		flags_player |= FLAG_PARADO;
 	}
 
-	posX = p_xbox360->posX;
-	posY = p_xbox360->posY;
-
 	//Keys reading
-	FILE* f1;
-	f1 = fopen("xbox360-1.txt","r");//Opens the file in reading mode
-	p_xbox360->teclaXbox = getc(f1);//Reads char from the file
-	fclose(f1);
-	switch(p_xbox360->teclaXbox){
-		case 'A': //disparo
-			piLock (SYSTEM_FLAGS_KEY);
-			flags_juego |= FLAG_TRIGGER_BUTTON;
-			piUnlock (SYSTEM_FLAGS_KEY);
+	if(nrebotes>0){
+		nrebotes--;
+	}else{
+		switch(p_xbox360->teclaXbox){
+			case 'T': //disparo
+				//Si nos quedamos sin balas no se activa el flag(no se dispara)
+				if(disparos>0){
+					piLock (SYSTEM_FLAGS_KEY);
+					flags_juego |= FLAG_TRIGGER_BUTTON;
+					piUnlock (SYSTEM_FLAGS_KEY);
+				}
 
-			piLock (STD_IO_BUFFER_KEY);
-			printf("TECLA A PULSADA - PIUUUUUUUUUUUUUM!\n");
-			fflush(stdout);
-			piUnlock (STD_IO_BUFFER_KEY);
-			break;
+				nrebotes = 20;
+				break;
 
-		case 'L':
-			piLock (SYSTEM_FLAGS_KEY);
-			flags_juego |= FLAG_JOYSTICK_LEFT;
-			piUnlock (SYSTEM_FLAGS_KEY);
+			case 'X': //recargar
+				if(disparos<10){
+					disparos++;
+				}
+				nrebotes = 20;
+				break;
 
-			piLock (STD_IO_BUFFER_KEY);
-			printf("\n[PULSACION][SERVO LEFT!!!!]\n");
-			fflush(stdout);
-			piUnlock (STD_IO_BUFFER_KEY);
-			break;
+			case 'E': //end game
+				printf("GAME EXITED. HOPE YOU PLAY AGAIN SOON! :) \n");
+				exit(0);
+				break;
 
-		case 'R':
-			piLock (SYSTEM_FLAGS_KEY);
-			flags_juego |= FLAG_JOYSTICK_RIGHT;
-			piUnlock (SYSTEM_FLAGS_KEY);
+			case 'L': //mueve torreta izquierda
+				piLock (SYSTEM_FLAGS_KEY);
+				flags_juego |= FLAG_JOYSTICK_LEFT;
+				piUnlock (SYSTEM_FLAGS_KEY);
 
-			piLock (STD_IO_BUFFER_KEY);
-			printf("\n[PULSACION][SERVO RIGHT!!!!]\n");
-			fflush(stdout);
-			piUnlock (STD_IO_BUFFER_KEY);
-			break;
+				nrebotes = 20;
+				break;
 
-		case 'U':
-			piLock (SYSTEM_FLAGS_KEY);
-			flags_juego |= FLAG_JOYSTICK_UP;
-			piUnlock (SYSTEM_FLAGS_KEY);
+			case 'R': //mueve torreta derecha
+				piLock (SYSTEM_FLAGS_KEY);
+				flags_juego |= FLAG_JOYSTICK_RIGHT;
+				piUnlock (SYSTEM_FLAGS_KEY);
 
-			piLock (STD_IO_BUFFER_KEY);
-			printf("\n[PULSACION][SERVO UP!!!!]\n");
-			fflush(stdout);
-			piUnlock (STD_IO_BUFFER_KEY);
-			break;
+				nrebotes = 20;
+				break;
 
-		case 'D':
-			piLock (SYSTEM_FLAGS_KEY);
-			flags_juego |= FLAG_JOYSTICK_DOWN;
-			piUnlock (SYSTEM_FLAGS_KEY);
+			case 'U': ////mueve torreta arriba
+				piLock (SYSTEM_FLAGS_KEY);
+				flags_juego |= FLAG_JOYSTICK_UP;
+				piUnlock (SYSTEM_FLAGS_KEY);
 
-			piLock (STD_IO_BUFFER_KEY);
-			printf("\n[PULSACION][SERVO DOWN!!!!]\n");
-			fflush(stdout);
-			piUnlock (STD_IO_BUFFER_KEY);
-			break;
-		case 'N':
-			break;
-		default:
-			break;
+				nrebotes = 20;
+				break;
+
+			case 'D': //mueve torreta abajo
+				piLock (SYSTEM_FLAGS_KEY);
+				flags_juego |= FLAG_JOYSTICK_DOWN;
+				piUnlock (SYSTEM_FLAGS_KEY);
+
+				nrebotes = 20;
+				break;
+
+			case 'N':
+				break;
+
+			default:
+				break;
+		}
 	}
 }
 

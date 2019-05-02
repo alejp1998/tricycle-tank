@@ -150,10 +150,25 @@ int main ()
 
 	//Bucle infinito que maneja las maquinas de estado del sistema
 	while (1) {
+
+		system("clear");
 		fsm_fire (xbox360_fsm);
 		fsm_fire (player_fsm);
 		fsm_fire (ruedas_fsm);
 		fsm_fire (torreta_fsm);
+
+		//Print tank status
+		printf("MOV: RUEDA1( %d ) RUEDA2 ( %d ) \n", sistema.ruedas.rueda1 , sistema.ruedas.rueda2);
+		printf("SERVO(X)(Y): ( %d ) ( %d ) \n", sistema.torreta.servo_x.posicion , sistema.torreta.servo_y.posicion);
+		printf("ESTADISTICAS: IMPACTOS RECIBIDOS: ( %d ) BALAS RESTANTES: (%d) \n", sistema.torreta.impactos, disparos);
+		if(disparos<=0){
+		    printf("TE HAS QUEDADO SIN BALAS!!! PULSA X PARA RECARGAR MUNICION \n");
+		}
+		if(sistema.torreta.impactos>=10){
+			printf("HAS RECIBIDO 10 IMPACTOS!!! GAME OVER. \n");
+			exit(0);
+		}
+		fflush(stdout);
 
 		//Se actualizan las maquinas de estados cada CLK_MS
 		next += CLK_MS;

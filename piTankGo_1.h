@@ -51,9 +51,4 @@ typedef struct {
 int ConfiguraSistema (TipoSistema *p_sistema);
 int InicializaSistema (TipoSistema *p_sistema);
 
-//------------------------------------------------------
-// FUNCIONES LIGADAS A THREADS ADICIONALES
-//------------------------------------------------------
-PI_THREAD(thread_xbox360);
-
 #endif /* _PITANKGO_1_H_ */

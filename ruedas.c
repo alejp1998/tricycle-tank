@@ -54,12 +54,19 @@ void Movimiento(fsm_t* this){
 	TipoRuedas *p_ruedas;
 	p_ruedas = (TipoRuedas*)(this->user_data);
 
-	p_ruedas->rueda1 = (int) (STOPPED + RANGE*(posX - posY));
-	p_ruedas->rueda2 = (int) (STOPPED + RANGE*(+posX + posY));
+	//Normalizar el rango a uno
+	if(posX > SENSIBILIDAD){
+		posX = (posX-SENSIBILIDAD)/(1-SENSIBILIDAD);
+	}
+	if(posY > SENSIBILIDAD){
+		posY = (posY-SENSIBILIDAD)/(1-SENSIBILIDAD);
+	}
 
+	//Calculo longitud pwm
+	p_ruedas->rueda1 = (int) (STOPPED + RANGE*(posX - posY));
+	p_ruedas->rueda2 = (int) (STOPPED + RANGE*(posX + posY));
+
+	//Accionammiento de las ruedas
 	softPwmWrite(RUEDA1_PIN,p_ruedas->rueda1);
 	softPwmWrite(RUEDA2_PIN,p_ruedas->rueda2);
-
-	printf("MOVIMIENTO RUEDAS: RUEDA1( %d ) RUEDA2 ( %d ) \n", p_ruedas->rueda1 , p_ruedas->rueda2);
-	fflush(stdout);
 }

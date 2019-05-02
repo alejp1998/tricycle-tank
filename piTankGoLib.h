@@ -11,13 +11,11 @@
 #define CLK_MS 10
 
 // CLAVES PARA MUTEX
-// ATENCION: Valores a modificar por el alumno
 #define	SYSTEM_FLAGS_KEY	1
 #define	PLAYER_FLAGS_KEY	2
 #define	STD_IO_BUFFER_KEY	3
 
 // FLAGS FSM CONTROL DE JUEGO Y TORRETA
-// ATENCION: Valores a modificar por el alumno
 #define FLAG_SYSTEM_START 		0x01
 #define FLAG_JOYSTICK_UP 		0x02
 #define FLAG_JOYSTICK_DOWN 		0x04
@@ -29,7 +27,6 @@
 #define FLAG_SYSTEM_END			0x100
 
 // FLAGS FSM REPRODUCCION DE EFECTOS DE SONIDO
-// ATENCION: Valores a modificar por el alumno
 #define FLAG_START_DISPARO 		0x01
 #define FLAG_START_IMPACTO 		0x02
 #define FLAG_PLAYER_STOP 		0x04
@@ -41,6 +38,7 @@
 
 extern int flags_system;
 extern int flags_player;
+extern int disparos;
 
 extern int frecuenciaDespacito[];
 extern int tiempoDespacito[];

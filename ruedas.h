@@ -25,6 +25,7 @@ extern double posX, posY;
 
 #define STOPPED 15 //Ruedas paradas
 #define RANGE 8
+#define SENSIBILIDAD 0.3
 #define TIEMPOMOV 300 //0.3 segundos por mov
 
 //Almacena la velocidad de las ruedas en cada momento

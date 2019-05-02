@@ -4,6 +4,7 @@
 //------------------------------------------------------
 // PROCEDIMIENTOS DE INICIALIZACION DE LOS OBJETOS ESPECIFICOS
 //------------------------------------------------------
+int disparos;
 
 void InicializaTorreta (TipoTorreta *p_torreta) {
 
@@ -48,6 +49,9 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 
 	softPwmCreate (SERVOY_PIN, p_torreta->servo_y.inicio, SERVO_PWM_RANGE); // Internamente ya hace: piHiPri (90) ;
 	softPwmWrite(SERVOY_PIN, p_torreta->servo_y.posicion);
+
+	disparos = 10;
+	p_torreta->impactos = 0;
 
 	p_torreta->p_timer = tmr_new(timer_disparo_isr);
 }
@@ -150,9 +154,6 @@ void MueveTorretaArriba (fsm_t* this) {
 		p_torreta->servo_y.posicion = p_torreta->servo_y.posicion + p_torreta->servo_y.incremento;
 
 		softPwmWrite(SERVOY_PIN, p_torreta->servo_y.posicion);
-
-		printf("[SERVOY][POSICION]=[%d]\n", p_torreta->servo_y.posicion);
-		fflush(stdout);
 	}
 }
 
@@ -166,9 +167,6 @@ void MueveTorretaAbajo (fsm_t* this) {
 		p_torreta->servo_y.posicion = p_torreta->servo_y.posicion - p_torreta->servo_y.incremento;
 
 		softPwmWrite(SERVOY_PIN, p_torreta->servo_y.posicion);
-
-		printf("[SERVOY][POSICION]=[%d]\n", p_torreta->servo_y.posicion);
-		fflush(stdout);
 	}
 }
 
@@ -182,9 +180,6 @@ void MueveTorretaIzquierda (fsm_t* this) {
 			p_torreta->servo_x.posicion = p_torreta->servo_x.posicion + p_torreta->servo_x.incremento;
 
 		softPwmWrite(SERVOX_PIN, p_torreta->servo_x.posicion);
-
-		printf("[SERVOX][POSICION]=[%d]\n", p_torreta->servo_x.posicion);
-		fflush(stdout);
 	}
 }
 
@@ -199,9 +194,6 @@ void MueveTorretaDerecha (fsm_t* this) {
 
 
 		softPwmWrite(SERVOX_PIN, p_torreta->servo_x.posicion);
-
-		printf("[SERVOX][POSICION]=[%d]\n", p_torreta->servo_x.posicion);
-		fflush(stdout);
 	}
 }
 
@@ -214,6 +206,8 @@ void DisparoIR (fsm_t* this) {
 
     TipoTorreta *p_torreta;
     p_torreta = (TipoTorreta*)(this->user_data);
+    disparos--;
+
     digitalWrite (PIN_DISPARO, HIGH);
 	tmr_startms(p_torreta->p_timer,SHOOT_TIMEOUT);
 
@@ -222,7 +216,6 @@ void DisparoIR (fsm_t* this) {
 void FinalDisparoIR (fsm_t* this) {
 	flags_juego &= ~FLAG_SHOOT_TIMEOUT;
 	piLock (STD_IO_BUFFER_KEY);
-	printf("shoot timeout!\n");
 	fflush(stdout);
 	piUnlock (STD_IO_BUFFER_KEY);
     digitalWrite (PIN_DISPARO, LOW);
@@ -234,9 +227,14 @@ void ImpactoDetectado (fsm_t* this) {
 	flags_juego &= ~FLAG_TARGET_DONE;
 	digitalWrite (PIN_DISPARO, LOW);
 	piLock (STD_IO_BUFFER_KEY);
-	printf("Au!\n");
+	printf("AU! IMPACTO RECIBIDO!\n");
 	fflush(stdout);
 	piUnlock (STD_IO_BUFFER_KEY);
+
+	TipoTorreta *p_torreta;
+	p_torreta = (TipoTorreta*)(this->user_data);
+	p_torreta->impactos++;
+
 	piLock (PLAYER_FLAGS_KEY);
 	flags_player |= FLAG_START_IMPACTO;
 	piUnlock (PLAYER_FLAGS_KEY);
@@ -248,11 +246,6 @@ void FinalizaJuego (fsm_t* this) {
 	// ...
 }
 void timer_disparo_isr (union sigval value) {
-	piLock (STD_IO_BUFFER_KEY);
-	printf("disparo timeout\n");
-	fflush(stdout);
-	piUnlock (STD_IO_BUFFER_KEY);
-
 	piLock (SYSTEM_FLAGS_KEY);
 	flags_juego |= FLAG_SHOOT_TIMEOUT; //Activa el flag de final de nota
 	piUnlock (SYSTEM_FLAGS_KEY);
