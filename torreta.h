@@ -14,17 +14,17 @@
 
 #include "piTankGoLib.h"
 
-#define	SERVOX_PIN			4
-#define	SERVOY_PIN			7
+#define	SERVOX_PIN			17
+#define	SERVOY_PIN			27
 
 #define SERVO_PWM_RANGE		400 // 100 * 400 = 40,000 µS = 40 ms // 25 Hz
 
 #define SERVO_INCREMENTO	1
 #define SERVO_MINIMO		9
 #define SERVO_MAXIMO		22
-#define SHOOT_TIMEOUT		300
-#define PIN_DISPARO 7
-#define PIN_IMPACTO 15
+#define SHOOT_TIMEOUT		5000
+#define PIN_DISPARO 9
+#define PIN_IMPACTO 11
 
 typedef struct {
 	int inicio; // Valor correspondiente a la posicion inicial del servo

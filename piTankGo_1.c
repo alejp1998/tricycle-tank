@@ -39,12 +39,6 @@ int ConfiguraSistema (TipoSistema *p_sistema) { //Configuramos el sistema del pu
 			return -1;
 	}
 
-
-	//Establecemos pin 23 como salida y lo usamos para reproducir las notas de los efectos
-	pinMode(23,OUTPUT);
-	softToneCreate(23);
-	softToneWrite (23,0);
-
 	return result;
 }
 
@@ -105,6 +99,7 @@ int main ()
 	fsm_trans_t reproductor[] = {
 			{ WAIT_START, CompruebaStartDisparo, WAIT_NEXT, InicializaPlayDisparo },
 			{ WAIT_START, CompruebaStartImpacto, WAIT_NEXT, InicializaPlayImpacto },
+			{ WAIT_START, CompruebaStartEfecto, WAIT_NEXT, InicializaPlayEfecto },
 			{ WAIT_NEXT, CompruebaStartImpacto, WAIT_NEXT, InicializaPlayImpacto },
 			{ WAIT_NEXT, CompruebaNotaTimeout, WAIT_END, ActualizaPlayer },
 			{ WAIT_END, CompruebaFinalEfecto, WAIT_START, FinalEfecto },
@@ -151,24 +146,44 @@ int main ()
 	//Bucle infinito que maneja las maquinas de estado del sistema
 	while (1) {
 
-		system("clear");
 		fsm_fire (xbox360_fsm);
 		fsm_fire (player_fsm);
 		fsm_fire (ruedas_fsm);
 		fsm_fire (torreta_fsm);
 
-		//Print tank status
-		printf("MOV: RUEDA1( %d ) RUEDA2 ( %d ) \n", sistema.ruedas.rueda1 , sistema.ruedas.rueda2);
-		printf("SERVO(X)(Y): ( %d ) ( %d ) \n", sistema.torreta.servo_x.posicion , sistema.torreta.servo_y.posicion);
-		printf("ESTADISTICAS: IMPACTOS RECIBIDOS: ( %d ) BALAS RESTANTES: (%d) \n", sistema.torreta.impactos, disparos);
-		if(disparos<=0){
-		    printf("TE HAS QUEDADO SIN BALAS!!! PULSA X PARA RECARGAR MUNICION \n");
+		//Seleccion de efecto personalizado
+		if(nsong == 1){
+			InicializaEfecto (&(sistema.player.efecto_libre), "DESPACITO" , frecuenciaDespacito, tiempoDespacito, 160);
+			nsong = 0;
+		}else if(nsong == 2){
+			InicializaEfecto (&(sistema.player.efecto_libre), "GOT" , frecuenciaGOT, tiempoGOT, 518);
+			nsong = 0;
+		}else if(nsong == 3){
+			InicializaEfecto (&(sistema.player.efecto_libre), "TETRIS" , frecuenciaTetris, tiempoTetris, 55);
+			nsong = 0;
+		}else if(nsong == 4){
+			InicializaEfecto (&(sistema.player.efecto_libre), "STAR WARS" , frecuenciaStarwars, tiempoStarwars, 59);
+			nsong = 0;
 		}
-		if(sistema.torreta.impactos>=10){
-			printf("HAS RECIBIDO 10 IMPACTOS!!! GAME OVER. \n");
-			exit(0);
+
+		//Print tank status every loop (if not playing an effect)
+		if((flags_player & FLAG_PLAYER_ACTIVO)==0){
+			printf("MOV:     RUEDA1 ( %d ) RUEDA2 ( %d ) \n", sistema.ruedas.rueda1 , sistema.ruedas.rueda2);
+			printf("TORRETA: SERVOX ( %d ) SERVOY ( %d ) \n", sistema.torreta.servo_x.posicion , sistema.torreta.servo_y.posicion);
+			printf("ESTADISTICAS: IMPACTOS LOGRADOS: ( %d ) BALAS RESTANTES: ( %d ) \n", sistema.torreta.impactos, disparos);
+			printf("EFECTO: ( %s )\n", sistema.player.efecto_libre.nombre);
+			if(disparos<=0){
+				printf("TE HAS QUEDADO SIN BALAS!!! PULSA X PARA RECARGAR MUNICION \n");
+			}
+
+			if(sistema.torreta.impactos>=10){
+				printf("WINNER \n HAS ACERTADO 10 IMPACTOS!!!\n OTRA PARTIDA?\n");
+				exit(0);
+			}
+
+			printf("\n\n\n");
+			fflush(stdout);
 		}
-		fflush(stdout);
 
 		//Se actualizan las maquinas de estados cada CLK_MS
 		next += CLK_MS;

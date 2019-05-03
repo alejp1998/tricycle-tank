@@ -29,16 +29,19 @@
 // FLAGS FSM REPRODUCCION DE EFECTOS DE SONIDO
 #define FLAG_START_DISPARO 		0x01
 #define FLAG_START_IMPACTO 		0x02
-#define FLAG_PLAYER_STOP 		0x04
-#define FLAG_PLAYER_END			0x08
-#define FLAG_NOTA_TIMEOUT		0x10
+#define FLAG_START_EFECTO		0x04
+#define FLAG_PLAYER_STOP 		0x08
+#define FLAG_PLAYER_END			0x10
+#define FLAG_NOTA_TIMEOUT		0x20
+#define FLAG_PLAYER_ACTIVO		0x40
 //Flags de las ruedas
-#define FLAG_MOVIMIENTO			0x20
-#define FLAG_PARADO				0x40
+#define FLAG_MOVIMIENTO			0x80
+#define FLAG_PARADO				0x100
 
 extern int flags_system;
 extern int flags_player;
 extern int disparos;
+extern int nsong;
 
 extern int frecuenciaDespacito[];
 extern int tiempoDespacito[];

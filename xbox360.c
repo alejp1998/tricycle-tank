@@ -9,6 +9,7 @@
 
 double posX,posY = 0.0;
 int nrebotes = 0;
+int nsong = 1;
 
 void InicializaXbox360(TipoXbox360* p_xbox360){
 	p_xbox360->teclaXbox = 'N';
@@ -63,6 +64,20 @@ void Pulsada(fsm_t* this){
 				nrebotes = 20;
 				break;
 
+			case 'A': //reproducir efecto libre
+				piLock (PLAYER_FLAGS_KEY);
+				flags_player |= FLAG_START_EFECTO;
+				piUnlock (PLAYER_FLAGS_KEY);
+				nrebotes = 20;
+				break;
+
+			case 'B': //finalizar efecto en reproduccion
+				piLock (PLAYER_FLAGS_KEY);
+				flags_player |= FLAG_PLAYER_END;
+				piUnlock (PLAYER_FLAGS_KEY);
+				nrebotes = 20;
+				break;
+
 			case 'E': //end game
 				printf("GAME EXITED. HOPE YOU PLAY AGAIN SOON! :) \n");
 				exit(0);
@@ -96,6 +111,30 @@ void Pulsada(fsm_t* this){
 				piLock (SYSTEM_FLAGS_KEY);
 				flags_juego |= FLAG_JOYSTICK_DOWN;
 				piUnlock (SYSTEM_FLAGS_KEY);
+
+				nrebotes = 20;
+				break;
+
+			case 'l': //selecciona despacito
+				nsong = 1;
+
+				nrebotes = 20;
+				break;
+
+			case 'r': //selecciona GOT
+				nsong = 2;
+
+				nrebotes = 20;
+				break;
+
+			case 'u': //selecciona tetris
+				nsong = 3;
+
+				nrebotes = 20;
+				break;
+
+			case 'd': //selecciona star wars
+				nsong = 4;
 
 				nrebotes = 20;
 				break;

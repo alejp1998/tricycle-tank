@@ -16,6 +16,7 @@
 
 #define MAX_NUM_NOTAS 		2000
 #define MAX_NUM_CHAR_NOMBRE	100
+#define PLAYER_PIN 23
 
 typedef struct {
 	char nombre[MAX_NUM_CHAR_NOMBRE]; // String con el nombre del efecto
@@ -33,6 +34,7 @@ typedef struct {
 
 	TipoEfecto efecto_disparo; // Efecto de disparo
 	TipoEfecto efecto_impacto; // Efecto de impacto
+	TipoEfecto efecto_libre; // Efecto seleccionado
 
 	tmr_t* p_timer; //Puntero al temporizador que inicializaremos mas tarde
 } TipoPlayer;
@@ -46,6 +48,7 @@ void InicializaPlayer (TipoPlayer *p_player);
 // Prototipos de funciones de entrada
 int CompruebaStartDisparo (fsm_t* this);
 int CompruebaStartImpacto (fsm_t* this);
+int CompruebaStartEfecto (fsm_t* this);
 int CompruebaNuevaNota (fsm_t* this);
 int CompruebaNotaTimeout (fsm_t* this);
 int CompruebaFinalEfecto (fsm_t* this);
@@ -53,6 +56,7 @@ int CompruebaFinalEfecto (fsm_t* this);
 // Prototipos de funciones de salida
 void InicializaPlayDisparo (fsm_t* this);
 void InicializaPlayImpacto (fsm_t* this);
+void InicializaPlayEfecto (fsm_t* this);
 void ComienzaNuevaNota (fsm_t* this);
 void ActualizaPlayer (fsm_t* this);
 void FinalEfecto (fsm_t* this);

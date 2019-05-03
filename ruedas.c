@@ -13,11 +13,11 @@ void InicializaRuedas(TipoRuedas *p_ruedas){
 	p_ruedas->rueda1 = p_ruedas->parado;
 	p_ruedas->rueda2 = p_ruedas->parado;
 
-	//Creamos señales control pwm
-	softPwmCreate(RUEDA1_PIN,p_ruedas->parado,RUEDA_PWM_RANGE);
-	softPwmWrite(RUEDA1_PIN,p_ruedas->parado);
-	softPwmCreate(RUEDA2_PIN,p_ruedas->parado,RUEDA_PWM_RANGE);
-	softPwmWrite(RUEDA2_PIN,p_ruedas->parado);
+	//Creamos señales control pwm (hardware)
+	pinMode(RUEDA1_PIN,PWM_OUTPUT);
+	pwmWrite(RUEDA1_PIN,p_ruedas->parado);
+	pinMode(RUEDA2_PIN,PWM_OUTPUT);
+	pwmWrite(RUEDA2_PIN,p_ruedas->parado);
 }
 
 
@@ -44,8 +44,8 @@ void Parado(fsm_t* this){
 	p_ruedas->rueda1 = STOPPED;
 	p_ruedas->rueda2 = STOPPED;
 
-	softPwmWrite(RUEDA1_PIN,p_ruedas->rueda1);
-	softPwmWrite(RUEDA2_PIN,p_ruedas->rueda2);
+	pwmWrite(RUEDA1_PIN,p_ruedas->rueda1);
+	pwmWrite(RUEDA2_PIN,p_ruedas->rueda2);
 }
 
 void Movimiento(fsm_t* this){
@@ -67,6 +67,6 @@ void Movimiento(fsm_t* this){
 	p_ruedas->rueda2 = (int) (STOPPED + RANGE*(posX + posY));
 
 	//Accionammiento de las ruedas
-	softPwmWrite(RUEDA1_PIN,p_ruedas->rueda1);
-	softPwmWrite(RUEDA2_PIN,p_ruedas->rueda2);
+	pwmWrite(RUEDA1_PIN,p_ruedas->rueda1);
+	pwmWrite(RUEDA2_PIN,p_ruedas->rueda2);
 }

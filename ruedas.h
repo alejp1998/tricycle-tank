@@ -24,7 +24,7 @@ extern double posX, posY;
 #define RUEDA_PWM_RANGE		400 //Rango del PWM
 
 #define STOPPED 15 //Ruedas paradas
-#define RANGE 8
+#define RANGE 4 //MAXIMO 8
 #define SENSIBILIDAD 0.3
 #define TIEMPOMOV 300 //0.3 segundos por mov
 
