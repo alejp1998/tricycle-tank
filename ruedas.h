@@ -2,7 +2,7 @@
  * ruedas.h
  *
  *  Created on: 18 abr. 2019
- *      Author: Ale
+ *      Author: Alicia y Ale
  */
 
 #ifndef RUEDAS_H_

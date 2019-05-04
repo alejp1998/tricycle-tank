@@ -2,7 +2,7 @@
  * xbox360.c
  *
  *  Created on: 1 may. 2019
- *      Author: Ale
+ *      Author: Alicia y Ale
  */
 
 #include "xbox360.h"
@@ -80,9 +80,18 @@ void Pulsada(fsm_t* this){
 				nrebotes = NREBOTES;
 				break;
 
-			case 'E': //end game
-				printf("GAME EXITED. HOPE YOU PLAY AGAIN SOON! :) \n");
-				exit(0);
+			case 'E': //finalizar juego
+				piLock (SYSTEM_FLAGS_KEY);
+				flags_juego |= FLAG_SYSTEM_END;
+				piUnlock (SYSTEM_FLAGS_KEY);
+				nrebotes = NREBOTES;
+				break;
+
+			case 'Y': //comenzar juego
+				piLock (SYSTEM_FLAGS_KEY);
+				flags_juego |= FLAG_SYSTEM_START;
+				piUnlock (SYSTEM_FLAGS_KEY);
+				nrebotes = NREBOTES;
 				break;
 
 			case 'l': //selecciona despacito

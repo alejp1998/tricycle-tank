@@ -2,7 +2,7 @@
  * ruedas.c
  *
  *  Created on: 18 abr. 2019
- *      Author: Ale
+ *      Author: Alicia y Ale
  */
 
 #include "ruedas.h"

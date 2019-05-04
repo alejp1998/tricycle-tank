@@ -2,7 +2,7 @@
  * xbox360.h
  *
  *  Created on: 1 may. 2019
- *      Author: Ale
+ *      Author: Alicia y Ale
  */
 
 #ifndef XBOX360_H_
@@ -14,7 +14,7 @@
 
 #include "piTankGoLib.h"
 
-#define NREBOTES 5
+#define NREBOTES 40
 
 extern int flags_juego;
 extern int flags_player;

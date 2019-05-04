@@ -68,10 +68,7 @@ void impacto_recibido_isr (void) {
 }
 int CompruebaComienzo (fsm_t* this) {
 	int result = 0;
-
-	// A completar por el alumno
-	// ...
-
+	result = (flags_juego & FLAG_SYSTEM_START);
 	return result;
 }
 
@@ -140,8 +137,8 @@ int CompruebaFinalJuego (fsm_t* this) {
 //------------------------------------------------------
 
 void ComienzaSistema (fsm_t* this) {
-	// A completar por el alumno
-	// ...
+	printf("GAME STARTED! GOOD LUCK\n");
+	fflush(stdout);
 }
 
 void MueveTorretaArriba (fsm_t* this) {
@@ -242,8 +239,9 @@ void ImpactoDetectado (fsm_t* this) {
 }
 
 void FinalizaJuego (fsm_t* this) {
-	// A completar por el alumno
-	// ...
+	printf("GAME ENDED! HOPE YOU PLAY AGAIN SOON!\n");
+	fflush(stdout);
+	exit(0);
 }
 void timer_disparo_isr (union sigval value) {
 	piLock (SYSTEM_FLAGS_KEY);

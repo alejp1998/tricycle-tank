@@ -112,7 +112,7 @@ int main ()
 			{PARADO, CompruebaMovimiento, MOVIMIENTO, Movimiento },
 			{MOVIMIENTO, CompruebaMovimiento, MOVIMIENTO, Movimiento },
 			{MOVIMIENTO, CompruebaParado, PARADO, Parado },
-			{-1,NULL,-1,NULL}
+			{-1,NULL,-1,NULL},
 	};
 
 	//Control torreta
@@ -138,7 +138,7 @@ int main ()
 	fsm_t* xbox360_fsm = fsm_new (ESPERAPULS, xbox360, &(sistema.mando));
 	fsm_t* player_fsm = fsm_new (WAIT_START, reproductor, &(sistema.player));
 	fsm_t* ruedas_fsm = fsm_new (PARADO, ruedas, &(sistema.ruedas));
-	fsm_t* torreta_fsm = fsm_new (WAIT_MOVE, torreta, &(sistema.torreta));
+	fsm_t* torreta_fsm = fsm_new (WAIT_START, torreta, &(sistema.torreta));
 
 	//Valor inicial de next
 	next = millis();
@@ -166,22 +166,26 @@ int main ()
 			nsong = 0;
 		}
 
-		//Print tank status every loop (if not playing an effect)
-		if((flags_player & FLAG_PLAYER_ACTIVO)==0){
+		//Imprimir estado del tanke cuando empieze el juego (si no estamos reproduciendo un efecto)
+		if((flags_player & FLAG_PLAYER_ACTIVO)==0 && (flags_juego & FLAG_SYSTEM_START) != 0){
 			printf("MOV:     RUEDA1 ( %d ) RUEDA2 ( %d ) \n", sistema.ruedas.rueda1 , sistema.ruedas.rueda2);
 			printf("TORRETA: SERVOX ( %d ) SERVOY ( %d ) \n", sistema.torreta.servo_x.posicion , sistema.torreta.servo_y.posicion);
 			printf("ESTADISTICAS: IMPACTOS LOGRADOS: ( %d ) BALAS RESTANTES: ( %d ) \n", sistema.torreta.impactos, disparos);
 			printf("EFECTO: ( %s )\n", sistema.player.efecto_libre.nombre);
+			
 			if(disparos<=0){
 				printf("TE HAS QUEDADO SIN BALAS!!! PULSA X PARA RECARGAR MUNICION \n");
 			}
 
 			if(sistema.torreta.impactos>=10){
 				printf("WINNER \n HAS ACERTADO 10 IMPACTOS!!!\n OTRA PARTIDA?\n");
-				exit(0);
+				flags_juego |= FLAG_SYSTEM_END;
 			}
 
 			printf("\n\n\n");
+			fflush(stdout);
+		}else if((flags_juego & FLAG_SYSTEM_START) == 0){
+			printf("WELCOME! PRESS START\n");
 			fflush(stdout);
 		}
 
