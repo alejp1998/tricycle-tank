@@ -14,8 +14,8 @@
 
 #include "piTankGoLib.h"
 
-#define	SERVOX_PIN			22
-#define	SERVOY_PIN			18
+#define	SERVOX_PIN			17
+#define	SERVOY_PIN			27
 
 #define SERVO_PWM_RANGE		400 // 100 * 400 = 40,000 µS = 40 ms // 25 Hz
 
@@ -23,8 +23,8 @@
 #define SERVO_MINIMO		9
 #define SERVO_MAXIMO		22
 #define SHOOT_TIMEOUT		5000
-#define PIN_DISPARO 7 //SON EL PINCHO 6
-#define PIN_IMPACTO 15
+#define PIN_DISPARO 9
+#define PIN_IMPACTO 11
 
 typedef struct {
 	int inicio; // Valor correspondiente a la posicion inicial del servo
@@ -37,6 +37,7 @@ typedef struct {
 typedef struct {
 	TipoServo servo_x;
 	TipoServo servo_y;
+	int impactos;
 	tmr_t* p_timer;
 } TipoTorreta;
 
@@ -70,8 +71,8 @@ void FinalDisparoIR (fsm_t* this);
 void ImpactoDetectado (fsm_t* this);
 void FinalizaJuego (fsm_t* this);
 void impacto_recibido_isr (void);
-void timer_disparo_isr (union sigval value);
+
 // Prototipos de procedimientos de atencion a las interrupciones
-//static void timer_duracion_disparo_isr (union sigval value);
+void timer_disparo_isr (union sigval value);
 
 #endif /* _TORRETA_H_ */

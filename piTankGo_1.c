@@ -16,9 +16,7 @@ int frecuenciasImpacto[32] = {97,109,79,121,80,127,123,75,119,96,71,101,98,113,9
 int tiemposImpacto[32] = {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10};
 
 int flags_juego = 0;
-int flags_player = 0; //para que empiece en wait next
-
-
+int flags_player = 0;
 
 //------------------------------------------------------
 // FUNCIONES DE CONFIGURACION/INICIALIZACION
@@ -41,22 +39,12 @@ int ConfiguraSistema (TipoSistema *p_sistema) { //Configuramos el sistema del pu
 			return -1;
 	}
 
-
-	//Establecemos pin 23 como salida y lo usamos para reproducir las notas de los efectos
-	pinMode(23,OUTPUT);
-	softToneCreate(23);
-	softToneWrite (23,0);
-	//...
-	//Configurar interrupciones externas de pines GPIO
-	//Configurar las interrupciones a usar(temporizador)
-	//Crear threads adicionales necesarios para el sistema
 	return result;
 }
 
 // int InicializaSistema (TipoSistema *p_sistema): procedimiento de inicializacion del sistema.
 // la inicializacion de los diferentes elementos de los que consta nuestro sistema,
 // la torreta, los efectos, etc.
-// igualmente arrancará el thread de exploración del teclado del PC
 int InicializaSistema (TipoSistema *p_sistema) { //Inicializamos el sistema y sus atributos(player...)
 	int result = 0;
 	//Inicializamos los efectos dentro del objeto player
@@ -66,11 +54,14 @@ int InicializaSistema (TipoSistema *p_sistema) { //Inicializamos el sistema y su
 	//Inicializamos el objeto player p_sistema->player es el objeto player bajo el puntero al sistema
 	InicializaPlayer(&(p_sistema->player));
 
-	//Inicializamos el objeto teclado, que controla el teclado matricial(tecla pulsada)
-	initialize(&teclado);
-
 	//Inicializamos el objeto servo
 	InicializaTorreta (&p_sistema->torreta);
+
+	//Inicializamos el objeto ruedas
+	InicializaRuedas (&p_sistema->ruedas);
+
+	//Inicializamos mando xbox360
+	InicializaXbox360 (&p_sistema->mando);
 
 	return result;
 }
@@ -98,30 +89,30 @@ int main ()
 	//TRANSICIONES MAQUINAS DE ESTADOS
 	//ESTADO DE PARTIDA , COMPROBACION DE FLAG, ESTADO FINAL(si se cumple comprobacion), FUNCION A ejecutar
 
+	//Control teclas pulsadas
+	fsm_trans_t xbox360[] = {
+				{ ESPERAPULS, CompruebaPulsada, ESPERAPULS, Pulsada},
+				{-1, NULL, -1, NULL },
+	};
+
 	//Reproductor de efectos
 	fsm_trans_t reproductor[] = {
-		{ WAIT_START, CompruebaStartDisparo, WAIT_NEXT, InicializaPlayDisparo },
-		{ WAIT_START, CompruebaStartImpacto, WAIT_NEXT, InicializaPlayImpacto },
-		{ WAIT_NEXT, CompruebaStartImpacto, WAIT_NEXT, InicializaPlayImpacto },
-		{ WAIT_NEXT, CompruebaNotaTimeout, WAIT_END, ActualizaPlayer },
-		{ WAIT_END, CompruebaFinalEfecto, WAIT_START, FinalEfecto },
-		{ WAIT_END, CompruebaNuevaNota, WAIT_NEXT, ComienzaNuevaNota},
-		{-1, NULL, -1, NULL },
-	};
-
-	//Excitacion columnas teclado matricial
-	fsm_trans_t columns[] = {
-			{ KEY_COL_1, CompruebaColumnTimeout, KEY_COL_2, col_2 },
-			{ KEY_COL_2, CompruebaColumnTimeout, KEY_COL_3, col_3 },
-			{ KEY_COL_3, CompruebaColumnTimeout, KEY_COL_4, col_4 },
-			{ KEY_COL_4, CompruebaColumnTimeout, KEY_COL_1, col_1 },
+			{ WAIT_START, CompruebaStartDisparo, WAIT_NEXT, InicializaPlayDisparo },
+			{ WAIT_START, CompruebaStartImpacto, WAIT_NEXT, InicializaPlayImpacto },
+			{ WAIT_START, CompruebaStartEfecto, WAIT_NEXT, InicializaPlayEfecto },
+			{ WAIT_NEXT, CompruebaStartImpacto, WAIT_NEXT, InicializaPlayImpacto },
+			{ WAIT_NEXT, CompruebaNotaTimeout, WAIT_END, ActualizaPlayer },
+			{ WAIT_END, CompruebaFinalEfecto, WAIT_START, FinalEfecto },
+			{ WAIT_END, CompruebaNuevaNota, WAIT_NEXT, ComienzaNuevaNota},
 			{-1, NULL, -1, NULL },
 	};
 
-	//Prevencion de rebotes
-	fsm_trans_t keypad[] = {
-			{ KEY_WAITING, key_pressed, KEY_WAITING, process_key},
-			{-1, NULL, -1, NULL },
+	//Control ruedas
+	fsm_trans_t ruedas[] = {
+			{PARADO, CompruebaMovimiento, MOVIMIENTO, Movimiento },
+			{MOVIMIENTO, CompruebaMovimiento, MOVIMIENTO, Movimiento },
+			{MOVIMIENTO, CompruebaParado, PARADO, Parado },
+			{-1,NULL,-1,NULL}
 	};
 
 	//Control torreta
@@ -144,9 +135,9 @@ int main ()
 
 	//Creacion de las maquinas de estados
 	//ESTADO INICIAL, LISTA TRANSICIONES, PUNTERO ASOCIADO A LA MAQUINA
+	fsm_t* xbox360_fsm = fsm_new (ESPERAPULS, xbox360, &(sistema.mando));
 	fsm_t* player_fsm = fsm_new (WAIT_START, reproductor, &(sistema.player));
-	fsm_t* columns_fsm = fsm_new (KEY_COL_1, columns, &teclado);
-	fsm_t* keypad_fsm = fsm_new (KEY_WAITING, keypad, &teclado);
+	fsm_t* ruedas_fsm = fsm_new (PARADO, ruedas, &(sistema.ruedas));
 	fsm_t* torreta_fsm = fsm_new (WAIT_MOVE, torreta, &(sistema.torreta));
 
 	//Valor inicial de next
@@ -154,10 +145,45 @@ int main ()
 
 	//Bucle infinito que maneja las maquinas de estado del sistema
 	while (1) {
+
+		fsm_fire (xbox360_fsm);
 		fsm_fire (player_fsm);
-		fsm_fire (columns_fsm);
-		fsm_fire (keypad_fsm);
+		fsm_fire (ruedas_fsm);
 		fsm_fire (torreta_fsm);
+
+		//Seleccion de efecto personalizado
+		if(nsong == 1){
+			InicializaEfecto (&(sistema.player.efecto_libre), "DESPACITO" , frecuenciaDespacito, tiempoDespacito, 160);
+			nsong = 0;
+		}else if(nsong == 2){
+			InicializaEfecto (&(sistema.player.efecto_libre), "GOT" , frecuenciaGOT, tiempoGOT, 518);
+			nsong = 0;
+		}else if(nsong == 3){
+			InicializaEfecto (&(sistema.player.efecto_libre), "TETRIS" , frecuenciaTetris, tiempoTetris, 55);
+			nsong = 0;
+		}else if(nsong == 4){
+			InicializaEfecto (&(sistema.player.efecto_libre), "STAR WARS" , frecuenciaStarwars, tiempoStarwars, 59);
+			nsong = 0;
+		}
+
+		//Print tank status every loop (if not playing an effect)
+		if((flags_player & FLAG_PLAYER_ACTIVO)==0){
+			printf("MOV:     RUEDA1 ( %d ) RUEDA2 ( %d ) \n", sistema.ruedas.rueda1 , sistema.ruedas.rueda2);
+			printf("TORRETA: SERVOX ( %d ) SERVOY ( %d ) \n", sistema.torreta.servo_x.posicion , sistema.torreta.servo_y.posicion);
+			printf("ESTADISTICAS: IMPACTOS LOGRADOS: ( %d ) BALAS RESTANTES: ( %d ) \n", sistema.torreta.impactos, disparos);
+			printf("EFECTO: ( %s )\n", sistema.player.efecto_libre.nombre);
+			if(disparos<=0){
+				printf("TE HAS QUEDADO SIN BALAS!!! PULSA X PARA RECARGAR MUNICION \n");
+			}
+
+			if(sistema.torreta.impactos>=10){
+				printf("WINNER \n HAS ACERTADO 10 IMPACTOS!!!\n OTRA PARTIDA?\n");
+				exit(0);
+			}
+
+			printf("\n\n\n");
+			fflush(stdout);
+		}
 
 		//Se actualizan las maquinas de estados cada CLK_MS
 		next += CLK_MS;

@@ -1,3 +1,3 @@
-fsm.d: ../fsm.c ../fsm.h
+fsm.o: ../fsm.c ../fsm.h
 
 ../fsm.h:
