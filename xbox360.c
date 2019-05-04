@@ -56,28 +56,28 @@ void Pulsada(fsm_t* this){
 					piUnlock (SYSTEM_FLAGS_KEY);
 				}
 
-				nrebotes = 20;
+				nrebotes = NREBOTES;
 				break;
 
 			case 'X': //recargar
 				if(disparos<10){
 					disparos++;
 				}
-				nrebotes = 20;
+				nrebotes = NREBOTES;
 				break;
 
 			case 'A': //reproducir efecto libre
 				piLock (PLAYER_FLAGS_KEY);
 				flags_player |= FLAG_START_EFECTO;
 				piUnlock (PLAYER_FLAGS_KEY);
-				nrebotes = 20;
+				nrebotes = NREBOTES;
 				break;
 
 			case 'B': //finalizar efecto en reproduccion
 				piLock (PLAYER_FLAGS_KEY);
 				flags_player |= FLAG_PLAYER_END;
 				piUnlock (PLAYER_FLAGS_KEY);
-				nrebotes = 20;
+				nrebotes = NREBOTES;
 				break;
 
 			case 'E': //end game
@@ -88,25 +88,25 @@ void Pulsada(fsm_t* this){
 			case 'l': //selecciona despacito
 				nsong = 1;
 
-				nrebotes = 20;
+				nrebotes = NREBOTES;
 				break;
 
 			case 'r': //selecciona GOT
 				nsong = 2;
 
-				nrebotes = 20;
+				nrebotes = NREBOTES;
 				break;
 
 			case 'u': //selecciona tetris
 				nsong = 3;
 
-				nrebotes = 20;
+				nrebotes = NREBOTES;
 				break;
 
 			case 'd': //selecciona star wars
 				nsong = 4;
 
-				nrebotes = 20;
+				nrebotes = NREBOTES;
 				break;
 
 			case 'N':
@@ -123,7 +123,7 @@ void Pulsada(fsm_t* this){
 				flags_juego |= FLAG_JOYSTICK_LEFT;
 				piUnlock (SYSTEM_FLAGS_KEY);
 
-				nrebotes = 20;
+				nrebotes = NREBOTES;
 				break;
 
 			case 'R': //mueve torreta derecha
@@ -131,7 +131,7 @@ void Pulsada(fsm_t* this){
 				flags_juego |= FLAG_JOYSTICK_RIGHT;
 				piUnlock (SYSTEM_FLAGS_KEY);
 
-				nrebotes = 20;
+				nrebotes = NREBOTES;
 				break;
 
 			case 'U': ////mueve torreta arriba
@@ -139,7 +139,7 @@ void Pulsada(fsm_t* this){
 				flags_juego |= FLAG_JOYSTICK_UP;
 				piUnlock (SYSTEM_FLAGS_KEY);
 
-				nrebotes = 20;
+				nrebotes = NREBOTES;
 				break;
 
 			case 'D': //mueve torreta abajo
@@ -147,7 +147,7 @@ void Pulsada(fsm_t* this){
 				flags_juego |= FLAG_JOYSTICK_DOWN;
 				piUnlock (SYSTEM_FLAGS_KEY);
 
-				nrebotes = 20;
+				nrebotes = NREBOTES;
 				break;
 
 			case 'N':

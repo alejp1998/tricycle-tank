@@ -14,6 +14,8 @@
 
 #include "piTankGoLib.h"
 
+#define NREBOTES 5
+
 extern int flags_juego;
 extern int flags_player;
 extern int disparos;
