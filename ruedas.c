@@ -15,8 +15,15 @@ void InicializaRuedas(TipoRuedas *p_ruedas){
 
 	//Creamos señales control pwm (hardware)
 	pinMode(RUEDA1_PIN,PWM_OUTPUT);
+	pwmSetMode(PWM_MODE_MS);
+	pwmSetClock(CLOCK_DIVIDER);
+	pwmSetRange(RUEDA_PWM_RANGE);
 	pwmWrite(RUEDA1_PIN,p_ruedas->parado);
+
 	pinMode(RUEDA2_PIN,PWM_OUTPUT);
+	pwmSetMode(PWM_MODE_MS);
+	pwmSetClock(CLOCK_DIVIDER);
+	pwmSetRange(RUEDA_PWM_RANGE);
 	pwmWrite(RUEDA2_PIN,p_ruedas->parado);
 }
 

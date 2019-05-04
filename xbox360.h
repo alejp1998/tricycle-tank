@@ -21,6 +21,7 @@ extern int disparos;
 //Almacena tecla pulsada en cada momento
 typedef struct {
 	char teclaXbox;
+	char teclaTorreta;
 	double posX;
 	double posY;
 }TipoXbox360;

@@ -21,12 +21,12 @@ extern double posX, posY;
 #define	RUEDA1_PIN			18 //Salidas a configurar como PWM
 #define	RUEDA2_PIN			19
 
-#define RUEDA_PWM_RANGE		400 //Rango del PWM
+#define RUEDA_PWM_RANGE		200  //Rango del PWM
+#define CLOCK_DIVIDER       1920 //Divisor del reloj
 
 #define STOPPED 15 //Ruedas paradas
-#define RANGE 4 //MAXIMO 8
+#define RANGE 8 //MAXIMO 8
 #define SENSIBILIDAD 0.3
-#define TIEMPOMOV 300 //0.3 segundos por mov
 
 //Almacena la velocidad de las ruedas en cada momento
 typedef struct {
