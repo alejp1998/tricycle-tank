@@ -143,6 +143,10 @@ int main ()
 	//Valor inicial de next
 	next = millis();
 
+	printf("SYSTEM INITIALIZATION COMPLETE!\n")
+	printf("WELCOME! PRESS START\n");
+	fflush(stdout);
+
 	//Bucle infinito que maneja las maquinas de estado del sistema
 	while (1) {
 
@@ -183,9 +187,6 @@ int main ()
 			}
 
 			printf("\n\n\n");
-			fflush(stdout);
-		}else if((flags_juego & FLAG_SYSTEM_START) == 0){
-			printf("WELCOME! PRESS START\n");
 			fflush(stdout);
 		}
 
