@@ -11,6 +11,7 @@ double posX,posY = 0.0;
 int nrebotes = 0;
 int nsong = 1;
 
+//Inicializamos sus valores a no pulsaciones
 void InicializaXbox360(TipoXbox360* p_xbox360){
 	p_xbox360->teclaXbox = 'N';
 	p_xbox360->teclaTorreta = 'N';
@@ -18,31 +19,34 @@ void InicializaXbox360(TipoXbox360* p_xbox360){
 	p_xbox360->posY = 0.0;
 }
 
+//Cada CLK_MS se comprueban las pulsaciones del mando
 int CompruebaPulsada(fsm_t* this){
 	return 1;
 }
 
+//Funcion encargada de leer teclas pulsadas y realizar acciones oportunas con ellas
 void Pulsada(fsm_t* this){
 	TipoXbox360 *p_xbox360;
 	p_xbox360 = (TipoXbox360*)(this->user_data);
 
-	//Wheels speed reading
+	//Lectura de mando xbox
 	FILE* f1;
 	f1 = fopen("xbox360.txt","r");//Opens the file in reading mode
 	fscanf(f1, "%s %s %lf %lf" , &(p_xbox360->teclaXbox) , &(p_xbox360->teclaTorreta) , &(p_xbox360->posX) , &(p_xbox360->posY) );
 	fclose(f1);
 
+	//Si la lectura del joystick izquierdo es mayor de 0.1, se activa el flag movimiento
 	if(p_xbox360->posX>=0.1 || p_xbox360->posX<=-0.1 || p_xbox360->posY>=0.1 || p_xbox360->posY<=-0.1){
-		posX = p_xbox360->posX;
-		posY = p_xbox360->posY;
+		posX = p_xbox360->posX; //Se pasan valores leidos a la clase ruedas mediante dos 
+		posY = p_xbox360->posY; //external doubles
 		flags_player |= FLAG_MOVIMIENTO;
 	}else{
-		posX = 0.0;
+		posX = 0.0; //Si son menores de 0.1 se pasa un 0.0 como posición leída
 		posY = 0.0;
 		flags_player |= FLAG_PARADO;
 	}
 
-	//Keys reading
+	//Despues de que pase nrebotes*clk_ms tiempo se lee siguiente pulsacion
 	if(nrebotes>0){
 		nrebotes--;
 	}else{
@@ -56,10 +60,11 @@ void Pulsada(fsm_t* this){
 					piUnlock (SYSTEM_FLAGS_KEY);
 				}
 
-				nrebotes = NREBOTES;
+				nrebotes = NREBOTES; //Numero de clk_ms a esperar
 				break;
 
 			case 'X': //recargar
+				//Permite recargar un maximo de 10 balas
 				if(disparos<10){
 					disparos++;
 				}
@@ -80,14 +85,14 @@ void Pulsada(fsm_t* this){
 				nrebotes = NREBOTES;
 				break;
 
-			case 'E': //finalizar juego
+			case 'Y': //finalizar juego
 				piLock (SYSTEM_FLAGS_KEY);
 				flags_juego |= FLAG_SYSTEM_END;
 				piUnlock (SYSTEM_FLAGS_KEY);
 				nrebotes = NREBOTES;
 				break;
 
-			case 'Y': //comenzar juego
+			case 'E': //comenzar juego
 				piLock (SYSTEM_FLAGS_KEY);
 				flags_juego |= FLAG_SYSTEM_START;
 				piUnlock (SYSTEM_FLAGS_KEY);
@@ -96,25 +101,21 @@ void Pulsada(fsm_t* this){
 
 			case 'l': //selecciona despacito
 				nsong = 1;
-
 				nrebotes = NREBOTES;
 				break;
 
 			case 'r': //selecciona GOT
 				nsong = 2;
-
 				nrebotes = NREBOTES;
 				break;
 
 			case 'u': //selecciona tetris
 				nsong = 3;
-
 				nrebotes = NREBOTES;
 				break;
 
 			case 'd': //selecciona star wars
 				nsong = 4;
-
 				nrebotes = NREBOTES;
 				break;
 
@@ -125,7 +126,7 @@ void Pulsada(fsm_t* this){
 				break;
 		}
 
-		//Switch para joystick izquierdo
+		//Switch para joystick derecho (control de torreta)
 		switch(p_xbox360->teclaTorreta){
 			case 'L': //mueve torreta izquierda
 				piLock (SYSTEM_FLAGS_KEY);

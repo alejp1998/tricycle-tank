@@ -14,13 +14,14 @@
 
 #include "piTankGoLib.h"
 
+//Numero de intervalos CLK_MS a esperar después de cada tecla
 #define NREBOTES 40
 
 extern int flags_juego;
 extern int flags_player;
 extern int disparos;
 
-//Almacena tecla pulsada en cada momento
+//Almacena teclas pulsada en cada momento y posicion del joystick
 typedef struct {
 	char teclaXbox;
 	char teclaTorreta;

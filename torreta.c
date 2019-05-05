@@ -1,17 +1,17 @@
 
 #include "torreta.h"
 
+int disparos; //Variable que almacena numero de balas restantes
+
 //------------------------------------------------------
 // PROCEDIMIENTOS DE INICIALIZACION DE LOS OBJETOS ESPECIFICOS
 //------------------------------------------------------
-int disparos;
-
 void InicializaTorreta (TipoTorreta *p_torreta) {
-
+	//Inicializamos pin impacto como entrada de interrupcion(flanco subido)
 	pinMode (PIN_IMPACTO, INPUT);
 	pullUpDnControl(PIN_IMPACTO, PUD_DOWN);
 	wiringPiISR (PIN_IMPACTO, INT_EDGE_RISING, impacto_recibido_isr);
-
+	//Inicializamos pin diparo como salida, y la ponemos a low
 	pinMode (PIN_DISPARO, OUTPUT);
 	digitalWrite (PIN_DISPARO, LOW);
 
@@ -21,15 +21,16 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 	p_torreta->servo_x.minimo 	= SERVO_MINIMO;
 	p_torreta->servo_x.maximo 	= SERVO_MAXIMO;
 
+	//Lo orientamos hacia su posicion central inicialmente
 	p_torreta->servo_x.inicio 	= SERVO_MINIMO + (SERVO_MAXIMO - SERVO_MINIMO)/2;
 	p_torreta->servo_x.posicion 	= p_torreta->servo_x.inicio;
-
+	//Si su posicion excede el maximo lo ponemos al maximo
 	if(p_torreta->servo_x.posicion > p_torreta->servo_x.maximo)
 		p_torreta->servo_x.posicion = p_torreta->servo_x.maximo;
-
+	//Si excede el minimo lo ponemos al minimo
 	if(p_torreta->servo_x.posicion < p_torreta->servo_x.minimo)
 		p_torreta->servo_x.posicion = p_torreta->servo_x.minimo;
-
+	//Escribimos señal pwm software en su pin
 	softPwmCreate (SERVOX_PIN, p_torreta->servo_y.inicio, SERVO_PWM_RANGE); // Internamente ya hace: piHiPri (90) ;
 	softPwmWrite(SERVOX_PIN, p_torreta->servo_y.posicion);
 
@@ -38,21 +39,23 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 	p_torreta->servo_y.minimo 	= SERVO_MINIMO;
 	p_torreta->servo_y.maximo 	= SERVO_MAXIMO;
 
+	//Lo orientamos hacia su posicion central inicialmente
 	p_torreta->servo_y.inicio 	= SERVO_MINIMO + (SERVO_MAXIMO - SERVO_MINIMO)/2;
 	p_torreta->servo_y.posicion 	= p_torreta->servo_y.inicio;
-
+	//Si su posicion excede el maximo lo ponemos al maximo
 	if(p_torreta->servo_y.posicion > p_torreta->servo_y.maximo)
 		p_torreta->servo_y.posicion = p_torreta->servo_y.maximo;
-
+	//Si excede el minimo lo ponemos al minimo
 	if(p_torreta->servo_y.posicion < p_torreta->servo_y.minimo)
 		p_torreta->servo_y.posicion = p_torreta->servo_y.minimo;
-
+	//Escribimos señal pwm software en su pin
 	softPwmCreate (SERVOY_PIN, p_torreta->servo_y.inicio, SERVO_PWM_RANGE); // Internamente ya hace: piHiPri (90) ;
 	softPwmWrite(SERVOY_PIN, p_torreta->servo_y.posicion);
 
+	//Incializamos balas iniciales a 10, y impactos logrados a 0
 	disparos = 10;
 	p_torreta->impactos = 0;
-
+	//Declaramos temporizador del disparo
 	p_torreta->p_timer = tmr_new(timer_disparo_isr);
 }
 

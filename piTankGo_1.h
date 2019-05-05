@@ -11,9 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <wiringPi.h>
-#include "fsm.h" // para poder crear y ejecutar la maquina de estados
+#include "fsm.h"
 #include "player.h"
-#include "torreta.h"
 #include "torreta.h"
 #include "ruedas.h"
 #include "xbox360.h"
@@ -40,7 +39,7 @@ typedef struct {
 	TipoTorreta torreta; // Objeto para el control de la torreta
 	TipoRuedas ruedas; //Control de movimientos del tanque
 	TipoPlayer player; // Reproductor de efectos
-	TipoXbox360 mando;
+	TipoXbox360 mando; //Mando xbox360
 	int debug; // Variable que habilita o deshabilita la impresion de mensajes por salida estandar
 
 } TipoSistema;

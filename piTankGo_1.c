@@ -143,6 +143,7 @@ int main ()
 	//Valor inicial de next
 	next = millis();
 
+	//Print inicial, espera a que pulsemos start para comenzar juego
 	printf("SYSTEM INITIALIZATION COMPLETE!\n")
 	printf("WELCOME! PRESS START\n");
 	fflush(stdout);
@@ -151,11 +152,14 @@ int main ()
 	while (1) {
 
 		fsm_fire (xbox360_fsm);
-		fsm_fire (player_fsm);
-		fsm_fire (ruedas_fsm);
+		//No ejecuta el player ni las ruedas hasta que no comience
+		if((flags_juego & FLAG_SYSTEM_START) != 0){
+			fsm_fire (player_fsm);
+			fsm_fire (ruedas_fsm);
+		}
 		fsm_fire (torreta_fsm);
 
-		//Seleccion de efecto personalizado
+		//Seleccion de efecto personalizado con cruceta
 		if(nsong == 1){
 			InicializaEfecto (&(sistema.player.efecto_libre), "DESPACITO" , frecuenciaDespacito, tiempoDespacito, 160);
 			nsong = 0;
@@ -170,22 +174,27 @@ int main ()
 			nsong = 0;
 		}
 
-		//Imprimir estado del tanke cuando empieze el juego (si no estamos reproduciendo un efecto)
+		//Imprimir estado del tanque cuando empieze el juego (si no estamos reproduciendo un efecto)
 		if((flags_player & FLAG_PLAYER_ACTIVO)==0 && (flags_juego & FLAG_SYSTEM_START) != 0){
 			printf("MOV:     RUEDA1 ( %d ) RUEDA2 ( %d ) \n", sistema.ruedas.rueda1 , sistema.ruedas.rueda2);
 			printf("TORRETA: SERVOX ( %d ) SERVOY ( %d ) \n", sistema.torreta.servo_x.posicion , sistema.torreta.servo_y.posicion);
 			printf("ESTADISTICAS: IMPACTOS LOGRADOS: ( %d ) BALAS RESTANTES: ( %d ) \n", sistema.torreta.impactos, disparos);
 			printf("EFECTO: ( %s )\n", sistema.player.efecto_libre.nombre);
 			
+			//Cuando nos quedemos sin balas mostrar mensaje de recarga
 			if(disparos<=0){
 				printf("TE HAS QUEDADO SIN BALAS!!! PULSA X PARA RECARGAR MUNICION \n");
 			}
 
+			//Cuando acertemos 10 impactos, finalizar el juego
 			if(sistema.torreta.impactos>=10){
 				printf("WINNER \n HAS ACERTADO 10 IMPACTOS!!!\n OTRA PARTIDA?\n");
+				piLock(SYSTEM_FLAGS_KEY);
 				flags_juego |= FLAG_SYSTEM_END;
+				piUnlock(SYSTEM_FLAGS_KEY);
 			}
 
+			//Retornos de carro para separar estados del robot en consola
 			printf("\n\n\n");
 			fflush(stdout);
 		}
