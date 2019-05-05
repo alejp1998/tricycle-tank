@@ -1,9 +1,3 @@
-/*
- * piTankGo_1.h
- *
- *  Created on: 11 de enero de 2019
- *      Author: FFM
- */
 
 #ifndef _PITANKGO_1_H_
 #define _PITANKGO_1_H_

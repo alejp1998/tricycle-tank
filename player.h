@@ -1,9 +1,3 @@
-/*
- * player.h
- *
- *  Created on: 21 de enero de 2019
- *      Author: FFM
- */
  
 #ifndef PLAYER_H_
 #define PLAYER_H_
