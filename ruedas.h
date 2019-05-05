@@ -26,13 +26,15 @@ extern double posX, posY;
 
 #define STOPPED 15 //Ruedas paradas
 #define RANGE 8 //MAXIMO 8
-#define SENSIBILIDAD 0.3
+#define MAXIMO 23 	//Maxima longitud permitida por el servo
+#define MINIMO 7	//Minima longitud permitida por el servo
+#define SENSIBILIDAD 0.3 //Inclinacion a partir de la cual se tiene en cuenta el joystick
 
 //Almacena la velocidad de las ruedas en cada momento
 typedef struct {
-	int rueda1;
-	int rueda2;
-	int parado;
+	int rueda1; //Velocidad de la rueda 1
+	int rueda2;	//Velocidad de la rueda 2
+	int parado; //Valor para el que las ruedas estan paradas
 }TipoRuedas;
 
 void InicializaRuedas(TipoRuedas* p_ruedas);

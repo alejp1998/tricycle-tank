@@ -36,7 +36,7 @@ void Pulsada(fsm_t* this){
 	fclose(f1);
 
 	//Si la lectura del joystick izquierdo es mayor de 0.1, se activa el flag movimiento
-	if(p_xbox360->posX>=0.1 || p_xbox360->posX<=-0.1 || p_xbox360->posY>=0.1 || p_xbox360->posY<=-0.1){
+	if(p_xbox360->posX>=SENSIBILIDAD || p_xbox360->posX<=-SENSIBILIDAD || p_xbox360->posY>=SENSIBILIDAD || p_xbox360->posY<=-SENSIBILIDAD){
 		posX = p_xbox360->posX; //Se pasan valores leidos a la clase ruedas mediante dos 
 		posY = p_xbox360->posY; //external doubles
 		flags_player |= FLAG_MOVIMIENTO;

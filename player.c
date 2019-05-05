@@ -22,8 +22,8 @@ int InicializaEfecto (TipoEfecto *p_efecto, char *nombre, int *array_frecuencias
 // Procedimiento de inicializacion del objeto especifico
 void InicializaPlayer (TipoPlayer *p_player) {
 
-	p_player->posicion_nota_actual = 0;
-	p_player->p_efecto = &p_player->efecto_impacto; //Asociamos inicialmente el objeto disparo
+	p_player->posicion_nota_actual = 0; //Posicion nota actual
+	p_player->p_efecto = &p_player->efecto_disparo; //Asociamos inicialmente el objeto disparo
 	p_player->frecuencia_nota_actual = p_player->p_efecto->frecuencias[p_player->posicion_nota_actual];
 	p_player->duracion_nota_actual = p_player->p_efecto->duraciones[p_player->posicion_nota_actual];
 
@@ -45,7 +45,6 @@ void InicializaPlayer (TipoPlayer *p_player) {
 // result = (flags & FLAG_X) devolvera resultado != 0 cuando el bit x de flags
 // tenga un valor distinto de cero
 //------------------------------------------------------
-
 int CompruebaStartDisparo (fsm_t* this) {
 	int result = 0;
 	piLock (PLAYER_FLAGS_KEY);
@@ -199,7 +198,7 @@ void ComienzaNuevaNota (fsm_t* this) {
 	piUnlock (STD_IO_BUFFER_KEY);
 }
 
-//Cuando acaba una nota(TIMEOUT) incrementa el indice y commprueba si el la ultima
+//Cuando acaba una nota(TIMEOUT) incrementa el indice y commprueba si es la ultima
 void ActualizaPlayer (fsm_t* this) {
 	piLock (PLAYER_FLAGS_KEY);
 	flags_player &= ~FLAG_NOTA_TIMEOUT;

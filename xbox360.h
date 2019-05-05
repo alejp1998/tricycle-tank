@@ -13,6 +13,7 @@
 #include <wiringPi.h>
 
 #include "piTankGoLib.h"
+#include "ruedas.h"
 
 //Numero de intervalos CLK_MS a esperar después de cada tecla
 #define NREBOTES 40

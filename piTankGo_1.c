@@ -1,6 +1,8 @@
 
 #include "piTankGo_1.h"
 
+//Arrays de frecuencias y duraciones para el player
+//Efectos libres
 int frecuenciaDespacito[160] = {0,1175,1109,988,740,740,740,740,740,740,988,988,988,988,880,988,784,0,784,784,784,784,784,988,988,988,988,1109,1175,880,0,880,880,880,880,880,1175,1175,1175,1175,1318,1318,1109,0,1175,1109,988,740,740,740,740,740,740,988,988,988,988,880,988,784,0,784,784,784,784,784,988,988,988,988,1109,1175,880,0,880,880,880,880,880,1175,1175,1175,1175,1318,1318,1109,0,1480,1318,1480,1318,1480,1318,1480,1318,1480,1318,1480,1568,1568,1175,0,1175,1568,1568,1568,0,1568,1760,1568,1480,0,1480,1480,1480,1760,1568,1480,1318,659,659,659,659,659,659,659,659,554,587,1480,1318,1480,1318,1480,1318,1480,1318,1480,1318,1480,1568,1568,1175,0,1175,1568,1568,1568,1568,1760,1568,1480,0,1480,1480,1480,1760,1568,1480,1318};
 int tiempoDespacito[160] = {1200,600,600,300,300,150,150,150,150,150,150,150,150,300,150,300,343,112,150,150,150,150,150,150,150,150,300,150,300,300,150,150,150,150,150,150,150,150,150,300,150,300,800,300,600,600,300,300,150,150,150,150,150,150,150,150,300,150,300,343,112,150,150,150,150,150,150,150,150,300,150,300,300,150,150,150,150,150,150,150,150,150,300,150,300,450,1800,150,150,150,150,300,150,300,150,150,150,300,150,300,450,450,300,150,150,225,75,150,150,300,450,800,150,150,300,150,150,300,450,150,150,150,150,150,150,150,150,300,300,150,150,150,150,150,150,450,150,150,150,300,150,300,450,450,300,150,150,150,300,150,300,450,800,150,150,300,150,150,300,450};
 int frecuenciaGOT[518] = {1568,0,1046,0,1244,0,1397,0,1568,0,1046,0,1244,0,1397,0,1175,0,1397,0,932,0,1244,0,1175,0,1397,0,932,0,1244,0,1175,0,1046,0,831,0,698,0,523,0,349,0,784,0,523,0,523,0,587,0,622,0,698,0,784,0,523,0,622,0,698,0,784,0,523,0,622,0,698,0,587,0,698,0,466,0,622,0,587,0,698,0,466,0,622,0,587,0,523,0,523,0,587,0,622,0,698,0,784,0,523,0,622,0,698,0,784,0,523,0,622,0,698,0,587,0,698,0,466,0,622,0,587,0,698,0,466,0,622,0,587,0,523,0,0,1568,0,0,1046,0,0,1244,0,0,1397,0,0,1568,0,0,1046,0,0,1244,0,0,1397,0,0,1175,0,587,0,622,0,587,0,523,0,587,0,784,0,880,0,932,0,1046,0,1175,0,0,1397,0,0,932,0,0,1244,0,0,1175,0,0,1397,0,0,932,0,0,1244,0,0,1175,0,0,1046,0,0,1568,0,0,1046,0,0,1244,0,0,1397,0,0,1568,0,0,1046,0,0,1244,0,0,1397,0,0,1175,0,880,0,784,0,932,0,1244,0,0,1397,0,0,932,0,0,1175,0,0,1244,0,0,1175,0,0,932,0,0,1046,0,0,2093,0,622,0,831,0,932,0,1046,0,622,0,831,0,1046,0,0,1865,0,622,0,784,0,831,0,932,0,622,0,784,0,932,0,0,1661,0,523,0,698,0,784,0,831,0,523,0,698,0,831,0,0,1568,0,1046,0,1244,0,1397,0,1568,0,1046,0,1244,0,1397,0,0,0,1661,0,1046,0,1175,0,1244,0,831,0,1175,0,1244,0,0,0,0,2489,0,0,0,0,2794,0,0,0,0,3136,0,0,2093,0,622,0,831,0,932,0,1046,0,622,0,831,0,1046,0,0,1865,0,622,0,784,0,831,0,932,0,622,0,784,0,932,0,0,1661,0,523,0,698,0,784,0,831,0,523,0,698,0,831,0,0,1568,0,1046,0,1244,0,1397,0,1568,0,1046,0,1244,0,1397,0,0,0,1661,0,1046,0,1175,0,1244,0,831,0,1175,0,1244,0,0,0,0,2489,0,1397,0,0,0,2350,0,0,0,2489,0,0,0,2350,0,0,0,0,2093,0,392,0,415,0,466,0,523,0,392,0,415,0,466,0,523,0,392,0,415,0,466,0,2093,0,1568,0,1661,0,1865,0,2093,0,1568,0,1661,0,1865,0,2093,0,1568,0,1661,0,1865};
@@ -9,14 +11,15 @@ int frecuenciaTetris[55] = {1319,988,1047,1175,1047,988,880,880,1047,1319,1175,1
 int tiempoTetris[55] = {450,225,225,450,225,225,450,225,225,450,225,225,450,225,225,450,450,450,450,450,675,450,225,450,225,225,675,225,450,225,225,450,225,225,450,450,450,450,450,450,900,900,900,900,900,900,1800,900,900,900,900,450,450,900,1800};
 int frecuenciaStarwars[59] = {523,0,523,0,523,0,698,0,1046,0,0,880,0,784,0,1397,0,523,0,1760,0,0,880,0,784,0,1397,0,523,0,1760,0,0,880,0,784,0,1397,0,523,0,1760,0,0,880,0,1760,0,0,784,0,523,0,0,523,0,0,523,0};
 int tiempoStarwars[59] = {134,134,134,134,134,134,536,134,536,134,134,134,134,134,134,536,134,402,134,134,429,357,134,134,134,134,536,134,402,134,134,429,357,134,134,134,134,536,134,402,134,134,429,357,134,134,134,429,357,1071,268,67,67,268,67,67,67,67,67};
-
+//Efectos torreta
 int frecuenciasDisparo[16] = {2500,2400,2300,2200,2100,2000,1900,1800,1700,1600,1500,1400,1300,1200,1100,1000};
 int tiemposDisparo[16] = {75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75};
 int frecuenciasImpacto[32] = {97,109,79,121,80,127,123,75,119,96,71,101,98,113,92,70,114,75,86,103,126,118,128,77,114,119,72};
 int tiemposImpacto[32] = {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10};
-
+//Variables para los flags
 int flags_juego = 0;
 int flags_player = 0;
+int nsongant = 0;
 
 //------------------------------------------------------
 // FUNCIONES DE CONFIGURACION/INICIALIZACION
@@ -30,7 +33,7 @@ int flags_player = 0;
 int ConfiguraSistema (TipoSistema *p_sistema) { //Configuramos el sistema del puntero p_sistema
 	int result = 0;
 
-	//set wiringPi library
+	//Inicializar wiringPi
 	if (wiringPiSetupGpio () < 0) {
 			piLock (STD_IO_BUFFER_KEY);
 			printf ("Unable to setup wiringPi\n");
@@ -38,7 +41,6 @@ int ConfiguraSistema (TipoSistema *p_sistema) { //Configuramos el sistema del pu
 
 			return -1;
 	}
-
 	return result;
 }
 
@@ -54,10 +56,10 @@ int InicializaSistema (TipoSistema *p_sistema) { //Inicializamos el sistema y su
 	//Inicializamos el objeto player p_sistema->player es el objeto player bajo el puntero al sistema
 	InicializaPlayer(&(p_sistema->player));
 
-	//Inicializamos el objeto servo
+	//Inicializamos el objeto torreta del sistema
 	InicializaTorreta (&p_sistema->torreta);
 
-	//Inicializamos el objeto ruedas
+	//Inicializamos el objeto ruedas del sistema
 	InicializaRuedas (&p_sistema->ruedas);
 
 	//Inicializamos mando xbox360
@@ -74,20 +76,21 @@ void delay_until (unsigned int next) {
 	}
 }
 
+//Conjunto de acciones a ejecutar
 int main ()
 {
 	//Declaramos el sistema a usar
 	TipoSistema sistema;
 	unsigned int next;
 
-	// Configuracion e inicializacion del sistema
+	//Configuracion e inicializacion del sistema
 	ConfiguraSistema (&sistema);
 
 	//Inicializamos todos los componentes del sistema
 	InicializaSistema (&sistema);
 
 	//TRANSICIONES MAQUINAS DE ESTADOS
-	//ESTADO DE PARTIDA , COMPROBACION DE FLAG, ESTADO FINAL(si se cumple comprobacion), FUNCION A ejecutar
+	//ESTADO DE PARTIDA , COMPROBACION DE FLAG, ESTADO FINAL(si se cumple comprobacion), FUNCION A EJECUTAR
 
 	//Control teclas pulsadas
 	fsm_trans_t xbox360[] = {
@@ -144,9 +147,11 @@ int main ()
 	next = millis();
 
 	//Print inicial, espera a que pulsemos start para comenzar juego
-	printf("SYSTEM INITIALIZATION COMPLETE!\n")
+	piLock(STD_IO_BUFFER_KEY);
+	printf("SYSTEM INITIALIZATION COMPLETE!\n");
 	printf("WELCOME! PRESS START\n");
 	fflush(stdout);
+	piUnlock(STD_IO_BUFFER_KEY);
 
 	//Bucle infinito que maneja las maquinas de estado del sistema
 	while (1) {
@@ -159,23 +164,24 @@ int main ()
 		}
 		fsm_fire (torreta_fsm);
 
-		//Seleccion de efecto personalizado con cruceta
-		if(nsong == 1){
+		//Seleccion de efecto personalizado con cruceta, no inicializamos dos veces seguidas el mismo
+		if(nsong == 1 && nsongant != nsong){
 			InicializaEfecto (&(sistema.player.efecto_libre), "DESPACITO" , frecuenciaDespacito, tiempoDespacito, 160);
-			nsong = 0;
-		}else if(nsong == 2){
+			nsongant = 1;//Numero de cancion anterior
+		}else if(nsong == 2 && nsongant != nsong){
 			InicializaEfecto (&(sistema.player.efecto_libre), "GOT" , frecuenciaGOT, tiempoGOT, 518);
-			nsong = 0;
-		}else if(nsong == 3){
+			nsongant = 2;
+		}else if(nsong == 3 && nsongant != nsong){
 			InicializaEfecto (&(sistema.player.efecto_libre), "TETRIS" , frecuenciaTetris, tiempoTetris, 55);
-			nsong = 0;
-		}else if(nsong == 4){
+			nsongant = 3;
+		}else if(nsong == 4 && nsongant != nsong){
 			InicializaEfecto (&(sistema.player.efecto_libre), "STAR WARS" , frecuenciaStarwars, tiempoStarwars, 59);
-			nsong = 0;
+			nsongant = 4;
 		}
 
 		//Imprimir estado del tanque cuando empieze el juego (si no estamos reproduciendo un efecto)
 		if((flags_player & FLAG_PLAYER_ACTIVO)==0 && (flags_juego & FLAG_SYSTEM_START) != 0){
+			piLock(STD_IO_BUFFER_KEY);
 			printf("MOV:     RUEDA1 ( %d ) RUEDA2 ( %d ) \n", sistema.ruedas.rueda1 , sistema.ruedas.rueda2);
 			printf("TORRETA: SERVOX ( %d ) SERVOY ( %d ) \n", sistema.torreta.servo_x.posicion , sistema.torreta.servo_y.posicion);
 			printf("ESTADISTICAS: IMPACTOS LOGRADOS: ( %d ) BALAS RESTANTES: ( %d ) \n", sistema.torreta.impactos, disparos);
@@ -197,6 +203,7 @@ int main ()
 			//Retornos de carro para separar estados del robot en consola
 			printf("\n\n\n");
 			fflush(stdout);
+			piUnlock(STD_IO_BUFFER_KEY);
 		}
 
 		//Se actualizan las maquinas de estados cada CLK_MS

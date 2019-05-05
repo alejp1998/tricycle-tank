@@ -71,7 +71,9 @@ void impacto_recibido_isr (void) {
 }
 int CompruebaComienzo (fsm_t* this) {
 	int result = 0;
+	piLock (SYSTEM_FLAGS_KEY);
 	result = (flags_juego & FLAG_SYSTEM_START);
+	piUnlock (SYSTEM_FLAGS_KEY);
 	return result;
 }
 
@@ -81,58 +83,66 @@ int VolverMove (fsm_t* this) {
 
 int CompruebaJoystickUp (fsm_t* this) {
 	int result = 0;
+	piLock (SYSTEM_FLAGS_KEY);
 	result = (flags_juego & FLAG_JOYSTICK_UP);
+	piUnlock (SYSTEM_FLAGS_KEY);
 	return result;
 }
 
 int CompruebaJoystickDown (fsm_t* fsm_player){
 	int result = 0;
+	piLock (SYSTEM_FLAGS_KEY);
 	result = (flags_juego & FLAG_JOYSTICK_DOWN);
+	piUnlock (SYSTEM_FLAGS_KEY);
 	return result;
 }
 
 int CompruebaJoystickLeft (fsm_t* this) {
 	int result = 0;
+	piLock (SYSTEM_FLAGS_KEY);
 	result = (flags_juego & FLAG_JOYSTICK_LEFT);
+	piUnlock (SYSTEM_FLAGS_KEY);
 	return result;
 }
 
 int CompruebaJoystickRight (fsm_t* this) {
 	int result = 0;
+	piLock (SYSTEM_FLAGS_KEY);
 	result = (flags_juego & FLAG_JOYSTICK_RIGHT);
+	piUnlock (SYSTEM_FLAGS_KEY);
 	return result;
 }
 
 int CompruebaTimeoutDisparo (fsm_t* this) {
 	int result = 0;
-		piLock (SYSTEM_FLAGS_KEY);
-		result = (flags_juego & FLAG_SHOOT_TIMEOUT);
-		piUnlock (SYSTEM_FLAGS_KEY);
-		return result;
+	piLock (SYSTEM_FLAGS_KEY);
+	result = (flags_juego & FLAG_SHOOT_TIMEOUT);
+	piUnlock (SYSTEM_FLAGS_KEY);
+	return result;
 }
 
 int CompruebaImpacto (fsm_t* this) {
 	int result = 0;
-		piLock (SYSTEM_FLAGS_KEY);
-		result = (flags_juego & FLAG_TARGET_DONE);
-		piUnlock (SYSTEM_FLAGS_KEY);
-		return result;
+	piLock (SYSTEM_FLAGS_KEY);
+	result = (flags_juego & FLAG_TARGET_DONE);
+	piUnlock (SYSTEM_FLAGS_KEY);
+	return result;
 }
 
 int CompruebaTriggerButton (fsm_t* this) {
-		int result = 0;
-		piLock (SYSTEM_FLAGS_KEY);
-		result = (flags_juego & FLAG_TRIGGER_BUTTON);
-		piUnlock (SYSTEM_FLAGS_KEY);
-		return result;
+	int result = 0;
+	piLock (SYSTEM_FLAGS_KEY);
+	result = (flags_juego & FLAG_TRIGGER_BUTTON);
+	piUnlock (SYSTEM_FLAGS_KEY);
+	return result;
 }
 
 int CompruebaFinalJuego (fsm_t* this) {
 	int result = 0;
-			piLock (SYSTEM_FLAGS_KEY);
-			result = (flags_juego & FLAG_SYSTEM_END);
-			piUnlock (SYSTEM_FLAGS_KEY);
-			return result;
+	piLock (SYSTEM_FLAGS_KEY);
+	result = (flags_juego & FLAG_SYSTEM_END);
+	piUnlock (SYSTEM_FLAGS_KEY);
+	return result;
 }
 
 //------------------------------------------------------
@@ -140,15 +150,19 @@ int CompruebaFinalJuego (fsm_t* this) {
 //------------------------------------------------------
 
 void ComienzaSistema (fsm_t* this) {
+	piLock(STD_IO_BUFFER_KEY);
 	printf("GAME STARTED! GOOD LUCK\n");
 	fflush(stdout);
+	piUnlock(STD_IO_BUFFER_KEY);
 }
 
 void MueveTorretaArriba (fsm_t* this) {
+	piLock (SYSTEM_FLAGS_KEY);
+	flags_juego &= (~FLAG_JOYSTICK_UP);
+	piUnlock (SYSTEM_FLAGS_KEY);
+
 	TipoTorreta *p_torreta;
 	p_torreta = (TipoTorreta*)(this->user_data);
-
-	flags_juego &= (~FLAG_JOYSTICK_UP);
 
 	if(p_torreta->servo_y.posicion + p_torreta->servo_y.incremento <= p_torreta->servo_y.maximo) {
 		p_torreta->servo_y.posicion = p_torreta->servo_y.posicion + p_torreta->servo_y.incremento;
@@ -158,10 +172,12 @@ void MueveTorretaArriba (fsm_t* this) {
 }
 
 void MueveTorretaAbajo (fsm_t* this) {
+	piLock (SYSTEM_FLAGS_KEY);
+	flags_juego &= (~FLAG_JOYSTICK_DOWN);
+	piUnlock (SYSTEM_FLAGS_KEY);
+
 	TipoTorreta *p_torreta;
 	p_torreta = (TipoTorreta*)(this->user_data);
-
-	flags_juego &= (~FLAG_JOYSTICK_DOWN);
 
 	if(p_torreta->servo_y.posicion - p_torreta->servo_y.incremento >= p_torreta->servo_y.minimo) {
 		p_torreta->servo_y.posicion = p_torreta->servo_y.posicion - p_torreta->servo_y.incremento;
@@ -171,10 +187,12 @@ void MueveTorretaAbajo (fsm_t* this) {
 }
 
 void MueveTorretaIzquierda (fsm_t* this) {
+	piLock (SYSTEM_FLAGS_KEY);
+	flags_juego &= (~FLAG_JOYSTICK_LEFT);
+	piUnlock (SYSTEM_FLAGS_KEY);
+
 	TipoTorreta *p_torreta;
 	p_torreta = (TipoTorreta*)(this->user_data);
-
-	flags_juego &= (~FLAG_JOYSTICK_LEFT);
 
 	if(p_torreta->servo_x.posicion + p_torreta->servo_x.incremento <= p_torreta->servo_x.maximo) {
 			p_torreta->servo_x.posicion = p_torreta->servo_x.posicion + p_torreta->servo_x.incremento;
@@ -184,10 +202,12 @@ void MueveTorretaIzquierda (fsm_t* this) {
 }
 
 void MueveTorretaDerecha (fsm_t* this) {
+	piLock (SYSTEM_FLAGS_KEY);
+	flags_juego &= (~FLAG_JOYSTICK_RIGHT);
+	piUnlock (SYSTEM_FLAGS_KEY);
+
 	TipoTorreta *p_torreta;
 	p_torreta = (TipoTorreta*)(this->user_data);
-
-	flags_juego &= (~FLAG_JOYSTICK_RIGHT);
 
 	if(p_torreta->servo_x.posicion - p_torreta->servo_x.incremento >= p_torreta->servo_x.minimo) {
 			p_torreta->servo_x.posicion = p_torreta->servo_x.posicion - p_torreta->servo_x.incremento;
@@ -198,8 +218,10 @@ void MueveTorretaDerecha (fsm_t* this) {
 }
 
 void DisparoIR (fsm_t* this) {
-
+	piLock (SYSTEM_FLAGS_KEY);
 	flags_juego &= ~FLAG_TRIGGER_BUTTON;
+	piUnlock (SYSTEM_FLAGS_KEY);
+
 	piLock (PLAYER_FLAGS_KEY);
 	flags_player |= FLAG_START_DISPARO;
     piUnlock (PLAYER_FLAGS_KEY);
@@ -214,17 +236,20 @@ void DisparoIR (fsm_t* this) {
 }
 
 void FinalDisparoIR (fsm_t* this) {
+	piLock (SYSTEM_FLAGS_KEY);
 	flags_juego &= ~FLAG_SHOOT_TIMEOUT;
-	piLock (STD_IO_BUFFER_KEY);
-	fflush(stdout);
-	piUnlock (STD_IO_BUFFER_KEY);
+	piUnlock (SYSTEM_FLAGS_KEY);
+
     digitalWrite (PIN_DISPARO, LOW);
 
 
 }
 
 void ImpactoDetectado (fsm_t* this) {
+	piLock (SYSTEM_FLAGS_KEY);
 	flags_juego &= ~FLAG_TARGET_DONE;
+	piUnlock (SYSTEM_FLAGS_KEY);
+
 	digitalWrite (PIN_DISPARO, LOW);
 	piLock (STD_IO_BUFFER_KEY);
 	printf("AU! IMPACTO RECIBIDO!\n");
@@ -242,8 +267,14 @@ void ImpactoDetectado (fsm_t* this) {
 }
 
 void FinalizaJuego (fsm_t* this) {
+	piLock (STD_IO_BUFFER_KEY);
 	printf("GAME ENDED! HOPE YOU PLAY AGAIN SOON!\n");
 	fflush(stdout);
+	piUnlock (STD_IO_BUFFER_KEY);
+
+	//Restablecemos pines pwm a estado normal
+	pinMode(18,OUTPUT);
+	pinMode(19,OUTPUT);
 	exit(0);
 }
 void timer_disparo_isr (union sigval value) {
