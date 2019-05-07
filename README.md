@@ -36,7 +36,10 @@ B -> FINALIZA EFECTO EN REPRODUCCION
 
 X -> RECARGAR BALAS (MAXIMO 10)
 
-START -> FINALIZAR JUEGO
+Y -> FINALIZAR JUEGO
+
+START -> COMENZAR JUEGO
+
 
 ------------------------------------------------------------------------------------------------------------------------------
 
