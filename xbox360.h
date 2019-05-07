@@ -16,6 +16,7 @@
 #include "ruedas.h"
 
 //Numero de intervalos CLK_MS a esperar después de cada tecla
+#define DEBOUNCE_TIME 200
 #define NREBOTES 40
 
 extern int flags_juego;

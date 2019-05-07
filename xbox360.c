@@ -7,9 +7,10 @@
 
 #include "xbox360.h"
 
-double posX,posY = 0.0;
-int nrebotes = 0;
-int nsong = 1;
+double posX,posY = 0.0;				//Valor de joystick izquierdo pasado a ruedas
+int nrebotes = 0;					//Espera para movimiento de servos torreta mas lento
+int debounceTimeMando = DEBOUNCE_TIME;	//Prevencion rebotes teclas
+int nsong = 1;						//Cancion seleccionada en efecto libre
 
 //Inicializamos sus valores a no pulsaciones
 void InicializaXbox360(TipoXbox360* p_xbox360){
@@ -46,11 +47,11 @@ void Pulsada(fsm_t* this){
 		flags_player |= FLAG_PARADO;
 	}
 
-	//Despues de que pase nrebotes*clk_ms tiempo se lee siguiente pulsacion
-	if(nrebotes>0){
-		nrebotes--;
+	//Despues de que soltemos lee siguiente pulsacion
+	if(millis()<debounceTimeMando){
+		debounceTimeMando = millis () + DEBOUNCE_TIME;
 	}else{
-		//Switch para teclas normales (3 veces más espera para siguiente tecla)
+		//Switch para teclas normales
 		switch(p_xbox360->teclaXbox){
 			case 'T': //disparo
 				//Si nos quedamos sin balas no se activa el flag(no se dispara)
@@ -60,7 +61,7 @@ void Pulsada(fsm_t* this){
 					piUnlock (SYSTEM_FLAGS_KEY);
 				}
 
-				nrebotes = 3*NREBOTES; //Numero de clk_ms a esperar
+				debounceTimeMando = millis () + DEBOUNCE_TIME;
 				break;
 
 			case 'X': //recargar
@@ -68,55 +69,55 @@ void Pulsada(fsm_t* this){
 				if(disparos<10){
 					disparos++;
 				}
-				nrebotes = 3*NREBOTES;
+				debounceTimeMando = millis () + DEBOUNCE_TIME;
 				break;
 
 			case 'A': //reproducir efecto libre
 				piLock (PLAYER_FLAGS_KEY);
 				flags_player |= FLAG_START_EFECTO;
 				piUnlock (PLAYER_FLAGS_KEY);
-				nrebotes = 3*NREBOTES;
+				debounceTimeMando = millis () + DEBOUNCE_TIME;
 				break;
 
 			case 'B': //finalizar efecto en reproduccion
 				piLock (PLAYER_FLAGS_KEY);
 				flags_player |= FLAG_PLAYER_END;
 				piUnlock (PLAYER_FLAGS_KEY);
-				nrebotes = 3*NREBOTES;
+				debounceTimeMando = millis () + DEBOUNCE_TIME;
 				break;
 
 			case 'Y': //finalizar juego
 				piLock (SYSTEM_FLAGS_KEY);
 				flags_juego |= FLAG_SYSTEM_END;
 				piUnlock (SYSTEM_FLAGS_KEY);
-				nrebotes = 3*NREBOTES;
+				debounceTimeMando = millis () + DEBOUNCE_TIME;
 				break;
 
 			case 'E': //comenzar juego
 				piLock (SYSTEM_FLAGS_KEY);
 				flags_juego |= FLAG_SYSTEM_START;
 				piUnlock (SYSTEM_FLAGS_KEY);
-				nrebotes = NREBOTES;
+				debounceTimeMando = millis () + DEBOUNCE_TIME;
 				break;
 
 			case 'l': //selecciona despacito
 				nsong = 1;
-				nrebotes = 3*NREBOTES;
+				debounceTimeMando = millis () + DEBOUNCE_TIME;
 				break;
 
 			case 'r': //selecciona GOT
 				nsong = 2;
-				nrebotes = 3*NREBOTES;
+				debounceTimeMando = millis () + DEBOUNCE_TIME;
 				break;
 
 			case 'u': //selecciona tetris
 				nsong = 3;
-				nrebotes = 3*NREBOTES;
+				debounceTimeMando = millis () + DEBOUNCE_TIME;
 				break;
 
 			case 'd': //selecciona star wars
 				nsong = 4;
-				nrebotes = 3*NREBOTES;
+				debounceTimeMando = millis () + DEBOUNCE_TIME;
 				break;
 
 			case 'N':
@@ -125,7 +126,12 @@ void Pulsada(fsm_t* this){
 			default:
 				break;
 		}
+	}
 
+	//Despues de CLK_MS*NREBOTES lee movimiento de la torreta
+	if(nrebotes>0){
+		nrebotes--;
+	}else{
 		//Switch para joystick derecho (control de torreta)
 		switch(p_xbox360->teclaTorreta){
 			case 'L': //mueve torreta izquierda
