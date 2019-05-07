@@ -31,8 +31,8 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 	if(p_torreta->servo_x.posicion < p_torreta->servo_x.minimo)
 		p_torreta->servo_x.posicion = p_torreta->servo_x.minimo;
 	//Escribimos señal pwm software en su pin
-	softPwmCreate (SERVOX_PIN, p_torreta->servo_y.inicio, SERVO_PWM_RANGE); // Internamente ya hace: piHiPri (90) ;
-	softPwmWrite(SERVOX_PIN, p_torreta->servo_y.posicion);
+	softPwmCreate (SERVOX_PIN, p_torreta->servo_x.inicio, SERVO_PWM_RANGE); // Internamente ya hace: piHiPri (90) ;
+	softPwmWrite(SERVOX_PIN, p_torreta->servo_x.posicion);
 
 	//Inicializamos servo vertical(y)
 	p_torreta->servo_y.incremento = SERVO_INCREMENTO;
@@ -273,8 +273,8 @@ void FinalizaJuego (fsm_t* this) {
 	piUnlock (STD_IO_BUFFER_KEY);
 
 	//Restablecemos pines pwm a estado normal
-	pinMode(18,OUTPUT);
-	pinMode(19,OUTPUT);
+	pwmWrite(18,0);
+	pwmWrite(19,0);
 	exit(0);
 }
 void timer_disparo_isr (union sigval value) {

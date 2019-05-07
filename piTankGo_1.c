@@ -14,8 +14,12 @@ int tiempoStarwars[59] = {134,134,134,134,134,134,536,134,536,134,134,134,134,13
 //Efectos torreta
 int frecuenciasDisparo[16] = {2500,2400,2300,2200,2100,2000,1900,1800,1700,1600,1500,1400,1300,1200,1100,1000};
 int tiemposDisparo[16] = {75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75};
-int frecuenciasImpacto[32] = {97,109,79,121,80,127,123,75,119,96,71,101,98,113,92,70,114,75,86,103,126,118,128,77,114,119,72};
-int tiemposImpacto[32] = {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10};
+int frecuenciasImpacto[55] = {1319,988,1047,1175,1047,988,880,880,1047,1319,1175,1047,988,988,1047,1175,1319,1047,880,880,0,1175,1397,1760,1568,1397,1319,1047,1319,1175,1047,988,988,1047,1175,1319,1047,880,880,0,659,523,587,494,523,440,415,659,523,587,494,523,659,880,831};
+int tiemposImpacto[55] = {450,225,225,450,225,225,450,225,225,450,225,225,450,225,225,450,450,450,450,450,675,450,225,450,225,225,675,225,450,225,225,450,225,225,450,450,450,450,450,450,900,900,900,900,900,900,1800,900,900,900,900,450,450,900,1800};
+
+//int frecuenciasImpacto[32] = {97,109,79,121,80,127,123,75,119,96,71,101,98,113,92,70,114,75,86,103,126,118,128,77,114,119,72};
+//int tiemposImpacto[32] = {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10};
+
 //Variables para los flags
 int flags_juego = 0;
 int flags_player = 0;
@@ -51,7 +55,7 @@ int InicializaSistema (TipoSistema *p_sistema) { //Inicializamos el sistema y su
 	int result = 0;
 	//Inicializamos los efectos dentro del objeto player
 	InicializaEfecto (&p_sistema->player.efecto_disparo, "DISPARO" , frecuenciasDisparo, tiemposDisparo, 16);
-	InicializaEfecto (&p_sistema->player.efecto_impacto, "IMPACTO" , frecuenciasImpacto, tiemposImpacto, 32);
+	InicializaEfecto (&p_sistema->player.efecto_impacto, "IMPACTO" , frecuenciasImpacto, tiemposImpacto, 55);
 
 	//Inicializamos el objeto player p_sistema->player es el objeto player bajo el puntero al sistema
 	InicializaPlayer(&(p_sistema->player));
