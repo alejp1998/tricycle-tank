@@ -13,6 +13,8 @@
 
 #define SERVO_PWM_RANGE		400 // 100 * 400 = 40,000 µS = 40 ms // 25 Hz
 
+#define DEBOUNCE_TIME		200 //Prevencion de rebotes en interrupcion impacto
+
 #define SERVO_INCREMENTO	1 //Incremento de la posicion de los servos
 #define SERVO_MINIMO		9 //Valor minimo del servo
 #define SERVO_MAXIMO		22//Valor maximo del servo

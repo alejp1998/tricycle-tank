@@ -50,7 +50,7 @@ void Pulsada(fsm_t* this){
 	if(nrebotes>0){
 		nrebotes--;
 	}else{
-		//Switch para teclas normales
+		//Switch para teclas normales (3 veces más espera para siguiente tecla)
 		switch(p_xbox360->teclaXbox){
 			case 'T': //disparo
 				//Si nos quedamos sin balas no se activa el flag(no se dispara)
@@ -60,7 +60,7 @@ void Pulsada(fsm_t* this){
 					piUnlock (SYSTEM_FLAGS_KEY);
 				}
 
-				nrebotes = NREBOTES; //Numero de clk_ms a esperar
+				nrebotes = 3*NREBOTES; //Numero de clk_ms a esperar
 				break;
 
 			case 'X': //recargar
@@ -68,28 +68,28 @@ void Pulsada(fsm_t* this){
 				if(disparos<10){
 					disparos++;
 				}
-				nrebotes = NREBOTES;
+				nrebotes = 3*NREBOTES;
 				break;
 
 			case 'A': //reproducir efecto libre
 				piLock (PLAYER_FLAGS_KEY);
 				flags_player |= FLAG_START_EFECTO;
 				piUnlock (PLAYER_FLAGS_KEY);
-				nrebotes = NREBOTES;
+				nrebotes = 3*NREBOTES;
 				break;
 
 			case 'B': //finalizar efecto en reproduccion
 				piLock (PLAYER_FLAGS_KEY);
 				flags_player |= FLAG_PLAYER_END;
 				piUnlock (PLAYER_FLAGS_KEY);
-				nrebotes = NREBOTES;
+				nrebotes = 3*NREBOTES;
 				break;
 
 			case 'Y': //finalizar juego
 				piLock (SYSTEM_FLAGS_KEY);
 				flags_juego |= FLAG_SYSTEM_END;
 				piUnlock (SYSTEM_FLAGS_KEY);
-				nrebotes = NREBOTES;
+				nrebotes = 3*NREBOTES;
 				break;
 
 			case 'E': //comenzar juego
@@ -101,22 +101,22 @@ void Pulsada(fsm_t* this){
 
 			case 'l': //selecciona despacito
 				nsong = 1;
-				nrebotes = NREBOTES;
+				nrebotes = 3*NREBOTES;
 				break;
 
 			case 'r': //selecciona GOT
 				nsong = 2;
-				nrebotes = NREBOTES;
+				nrebotes = 3*NREBOTES;
 				break;
 
 			case 'u': //selecciona tetris
 				nsong = 3;
-				nrebotes = NREBOTES;
+				nrebotes = 3*NREBOTES;
 				break;
 
 			case 'd': //selecciona star wars
 				nsong = 4;
-				nrebotes = NREBOTES;
+				nrebotes = 3*NREBOTES;
 				break;
 
 			case 'N':

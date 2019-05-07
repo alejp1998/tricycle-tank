@@ -2,7 +2,7 @@
 #include "torreta.h"
 
 int disparos; //Variable que almacena numero de balas restantes
-
+int debounceTime = DEBOUNCE_TIME;
 //------------------------------------------------------
 // PROCEDIMIENTOS DE INICIALIZACION DE LOS OBJETOS ESPECIFICOS
 //------------------------------------------------------
@@ -62,13 +62,6 @@ void InicializaTorreta (TipoTorreta *p_torreta) {
 //------------------------------------------------------
 // FUNCIONES DE ENTRADA O DE TRANSICION DE LA MAQUINA DE ESTADOS
 //------------------------------------------------------
-void impacto_recibido_isr (void) {
-
-	piLock (SYSTEM_FLAGS_KEY);
-	flags_juego |= FLAG_TARGET_DONE;
-	piUnlock (SYSTEM_FLAGS_KEY);
-
-}
 int CompruebaComienzo (fsm_t* this) {
 	int result = 0;
 	piLock (SYSTEM_FLAGS_KEY);
@@ -277,8 +270,26 @@ void FinalizaJuego (fsm_t* this) {
 	pwmWrite(19,0);
 	exit(0);
 }
+
+//TEMPORIZADOR DISPARO
 void timer_disparo_isr (union sigval value) {
 	piLock (SYSTEM_FLAGS_KEY);
 	flags_juego |= FLAG_SHOOT_TIMEOUT; //Activa el flag de final de nota
 	piUnlock (SYSTEM_FLAGS_KEY);
+}
+
+//FUNCION INTERRUPCION IMPACTO
+void impacto_recibido_isr (void) {
+	//Prevencion de rebotes
+	if (millis () < debounceTime) {
+		debounceTime = millis () + DEBOUNCE_TIME;
+		return;
+	}
+
+	piLock (SYSTEM_FLAGS_KEY);
+	flags_juego |= FLAG_TARGET_DONE;
+	piUnlock (SYSTEM_FLAGS_KEY);
+
+	//Actualizamos valor del debounceTime
+	debounceTime = millis () + DEBOUNCE_TIME;
 }
