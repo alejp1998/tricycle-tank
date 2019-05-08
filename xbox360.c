@@ -48,7 +48,7 @@ void Pulsada(fsm_t* this){
 	}
 
 	//Despues de que soltemos lee siguiente pulsacion
-	if(millis()<debounceTimeMando){
+	if((millis()<debounceTimeMando)&&(p_xbox360->teclaXbox!='N')){
 		debounceTimeMando = millis () + DEBOUNCE_TIME;
 	}else{
 		//Switch para teclas normales

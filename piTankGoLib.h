@@ -8,7 +8,7 @@
 #include "fsm.h"
 #include "tmr.h"
 
-#define CLK_MS 5 //Multiplo de duracion efectos
+#define CLK_MS 10 //Multiplo de duracion efectos
 
 // CLAVES PARA MUTEX
 #define	SYSTEM_FLAGS_KEY	1
