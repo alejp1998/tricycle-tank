@@ -47,9 +47,9 @@ INSTRUCCIONES
 
 1. Comenzar escritura de mando en segundo plano: 
   
-  Entrar en carpeta Xbox: cd Xbox
+  Entrar en carpeta xbox360controller: cd xbox360controller
   
-  Ejecutar: sudo python sample.py
+  Ejecutar: sudo python xbox360.py
  
 2. Comenzar juego:
 
