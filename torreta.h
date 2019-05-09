@@ -18,7 +18,7 @@
 #define SERVO_INCREMENTO	1 //Incremento de la posicion de los servos
 #define SERVO_MINIMO		9 //Valor minimo del servo
 #define SERVO_MAXIMO		22//Valor maximo del servo
-#define SHOOT_TIMEOUT		5000 //Tiempo desde que disparamos para detectar un impacto
+#define SHOOT_TIMEOUT		200 //Tiempo desde que disparamos para detectar un impacto
 #define PIN_DISPARO 9	//Pin donde se escribira high para disparar
 #define PIN_IMPACTO 11	//Pin donde atenderemos una interrupcion de subida para el impacto
 
