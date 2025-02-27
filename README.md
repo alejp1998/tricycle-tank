@@ -1,63 +1,46 @@
-# piTankGo_1
-Proyecto SDG2
+# Tricycle Tank 🚀🔫
 
-Este proyecto se encarga de manejar el control de una torreta y dos ruedas, ademas de la reproduccion de efectos, mediante los
-pines de la raspberry pi(GPIO). 
+Tricycle Tank is a C-based robotic combat game developed for the university course SDG2. Players control a laser-equipped tricycle tank using an Xbox controller, maneuvering to shoot opponents while avoiding hits. Each tank has limited lives, and the last one standing wins.
 
-------------------------------------------------------------------------------------------------------------------------------
+## Project Overview
+This project controls a turret and two wheels while also handling sound effects using the Raspberry Pi GPIO pins.
 
-PINES USADOS
+## GPIO Pin Configuration
 
-PINES 18, 19 : HARDWARE PWM -> CONTROL RUEDAS
+| Pin  | Function                      |
+|------|--------------------------------|
+| 18, 19  | Hardware PWM – Wheel control |
+| 17, 27  | Software PWM – Servo control |
+| 23   | SoftTone – Sound effects playback |
+| 9    | High – Shooting activation |
+| 11   | Rising Edge Detection – Hit detection |
 
-PINES 17, 27 : SOFTWARE PWM -> CONTROL SERVOS
+## Xbox 360 Controller Mapping 🎮
 
-PIN 23       : SOFTTONE -> REPRODUCCION EFECTOS
+- Left Joystick → Move wheels  
+- Right Joystick → Move turret servos  
+- D-Pad → Select sound effect  
+- Right Trigger → Fire laser  
+- A Button → Play selected sound effect  
+- B Button → Stop sound effect  
+- X Button → Reload (max 10 bullets)  
+- Y Button → End game  
+- Start Button → Begin game  
 
-PIN 9        : HIGH     -> DISPARO
+## Instructions 🛠️
 
-PIN 11       : DET FLANCO SUBIDA -> IMPACTOS
+### 1️⃣ Start Xbox Controller Input in the Background
+```bash
+cd xbox360controller  
+sudo python xbox360.py
+```
 
-------------------------------------------------------------------------------------------------------------------------------
+### 2️⃣ Start the Game
+```bash
+cd piTankEx  
+sudo ./piTankGo_1
+```
 
-CONTROLES MANDO XBOX360
-
-JOYSTICK IZQUIERDO -> MOVIMIENTO RUEDAS
-
-JOYSTICK DERECHO   -> MOVIMIENTO SERVOS
-
-CRUCETA DIGITAL    -> SELECCION DE EFECTO
-
-TRIGGER DERECHO    -> DISPARAR
-
-A -> REPRODUCE EFECTO LIBRE
-
-B -> FINALIZA EFECTO EN REPRODUCCION
-
-X -> RECARGAR BALAS (MAXIMO 10)
-
-Y -> FINALIZAR JUEGO
-
-START -> COMENZAR JUEGO
-
-
-------------------------------------------------------------------------------------------------------------------------------
-
-INSTRUCCIONES 
-
-1. Comenzar escritura de mando en segundo plano: 
-  
-  Entrar en carpeta xbox360controller: cd xbox360controller
-  
-  Ejecutar: sudo python xbox360.py
- 
-2. Comenzar juego:
-
-  Entrar en carpeta piTankEx: cd piTankEx
-  
-  Ejecutar: sudo ./piTankGo_1
-  
-3. Finalizar juego
-  
-  Pulsando la tecla START en mando Xbox360, o acertando 10 impactos.
-
+### 3️⃣ End the Game
+- Press **START** on the Xbox 360 controller  
+- Or, get hit **10 times**  
