@@ -505,10 +505,11 @@
 
     var stageEl = $id("pixi-stage");
     stageEl.addEventListener("mousemove", function (e) {
-      var r = stageEl.getBoundingClientRect();
+      // Map against the letterboxed canvas rect, not the stage
+      var cr = app.canvas.getBoundingClientRect();
       input.aim = Math.atan2(
-        e.clientY - r.top - game.player.y * cell,
-        e.clientX - r.left - game.player.x * cell,
+        e.clientY - cr.top - game.player.y * cell,
+        e.clientX - cr.left - game.player.x * cell,
       );
     });
     stageEl.addEventListener("click", function () {
@@ -617,10 +618,12 @@
     var w = wrap.clientWidth;
     var h = wrap.clientHeight;
     cell = Math.min(w / S.ARENA_W, h / S.ARENA_H);
-    app.renderer.resize(
-      Math.floor(S.ARENA_W * cell),
-      Math.floor(S.ARENA_H * cell),
-    );
+    var cw = Math.floor(S.ARENA_W * cell);
+    var ch = Math.floor(S.ARENA_H * cell);
+    app.renderer.resize(cw, ch);
+    // Canvas keeps its exact letterboxed size (no stretching/overflow)
+    app.canvas.style.width = cw + "px";
+    app.canvas.style.height = ch + "px";
   }
 
   var app = new PIXI.Application();
@@ -634,8 +637,6 @@
       window.__tankGame = game; // debug/test handle
       var wrap = $id("pixi-stage");
       wrap.appendChild(app.canvas);
-      app.canvas.style.width = "100%";
-      app.canvas.style.height = "100%";
       stage = new PIXI.Container();
       app.stage.addChild(stage);
       window.addEventListener("resize", layout);
