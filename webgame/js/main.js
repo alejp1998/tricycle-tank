@@ -505,11 +505,12 @@
 
     var stageEl = $id("pixi-stage");
     stageEl.addEventListener("mousemove", function (e) {
-      // Map against the letterboxed canvas rect, not the stage
+      // Map against the live canvas rect (scale-safe even if CSS constrains it)
       var cr = app.canvas.getBoundingClientRect();
+      var ccell = cr.width / S.ARENA_W;
       input.aim = Math.atan2(
-        e.clientY - cr.top - game.player.y * cell,
-        e.clientX - cr.left - game.player.x * cell,
+        e.clientY - cr.top - game.player.y * ccell,
+        e.clientX - cr.left - game.player.x * ccell,
       );
     });
     stageEl.addEventListener("click", function () {
