@@ -8,6 +8,7 @@ const assert = require("node:assert");
 const {
   ARENA_W,
   ARENA_H,
+  MAPS,
   OBSTACLES,
   PLAYER,
   createGame,
@@ -178,8 +179,12 @@ test("tank stays inside the arena bounds", () => {
   g.player.y = 10;
   g.player.angle = Math.PI / 4;
   for (let i = 0; i < 60; i++) update(g, { ...idle, throttle: 1 }, 0.1);
-  assert.ok(g.player.x >= PLAYER.radius && g.player.x <= ARENA_W - PLAYER.radius);
-  assert.ok(g.player.y >= PLAYER.radius && g.player.y <= ARENA_H - PLAYER.radius);
+  assert.ok(
+    g.player.x >= PLAYER.radius && g.player.x <= ARENA_W - PLAYER.radius,
+  );
+  assert.ok(
+    g.player.y >= PLAYER.radius && g.player.y <= ARENA_H - PLAYER.radius,
+  );
 });
 
 test("enemies converge on the player", () => {
@@ -187,11 +192,87 @@ test("enemies converge on the player", () => {
   const startDist = dist(g.enemies[0], g.player);
   for (let i = 0; i < 60; i++) update(g, idle, 0.1);
   const endDist = dist(g.enemies[0], g.player);
-  assert.ok(endDist < startDist, "enemy got closer: " + endDist + " < " + startDist);
+  assert.ok(
+    endDist < startDist,
+    "enemy got closer: " + endDist + " < " + startDist,
+  );
 });
 
 test("same seed reproduces the same match", () => {
   const a = createGame(42);
   const b = createGame(42);
   assert.strictEqual(a.rng(), b.rng());
+});
+
+// ---------------------------------------------------------------------
+// difficulty levels & maps
+
+test("default difficulty is medium with 3 enemies and 6 obstacles", () => {
+  const g = createGame(1);
+  assert.strictEqual(g.difficulty, "medium");
+  assert.strictEqual(g.map.name, "Industrial Zone");
+  assert.strictEqual(g.enemies.length, 3);
+  assert.strictEqual(g.map.obstacles.length, 6);
+  assert.strictEqual(MAPS.medium.enemies.length, 3);
+});
+
+test("easy map: 2 target tanks, open arena, slow inaccurate fire", () => {
+  const g = createGame(1, "easy");
+  assert.strictEqual(g.difficulty, "easy");
+  assert.strictEqual(g.enemies.length, 2);
+  assert.ok(
+    g.map.obstacles.length < 4,
+    "easy map is open: " + g.map.obstacles.length,
+  );
+  assert.ok(g.enemyCfg.speed < MAPS.medium.enemyCfg.speed);
+  assert.ok(g.enemyCfg.inaccuracy > MAPS.medium.enemyCfg.inaccuracy);
+});
+
+test("hard map: 4 enemies, dense walls, faster fire", () => {
+  const g = createGame(1, "hard");
+  assert.strictEqual(g.enemies.length, 4);
+  assert.ok(g.map.obstacles.length > MAPS.medium.obstacles.length);
+  assert.ok(g.enemyCfg.speed > MAPS.medium.enemyCfg.speed);
+  assert.ok(g.enemyCfg.fireCooldownMs < MAPS.medium.enemyCfg.fireCooldownMs);
+  assert.ok(g.enemyCfg.inaccuracy < MAPS.medium.enemyCfg.inaccuracy);
+});
+
+test("hit economy allows 10 hits on every difficulty", () => {
+  for (const diff of ["easy", "medium", "hard"]) {
+    const g = createGame(1, diff);
+    const maxHits = g.enemies.reduce((sum, e) => sum + e.hp, 0);
+    assert.ok(maxHits >= 10, diff + " must allow 10 hits, got " + maxHits);
+  }
+});
+
+test("every map keeps the player spawn area clear", () => {
+  for (const diff of ["easy", "medium", "hard"]) {
+    const g = createGame(1, diff);
+    let blocked = false;
+    for (const r of g.map.obstacles) {
+      if (
+        g.player.x > r.x - 40 &&
+        g.player.x < r.x + r.w + 40 &&
+        g.player.y > r.y - 40 &&
+        g.player.y < r.y + r.h + 40
+      )
+        blocked = true;
+    }
+    assert.ok(!blocked, diff + " player spawn must be clear");
+  }
+});
+
+test("reset can switch difficulty", () => {
+  const g = createGame(1, "easy");
+  reset(g, 1, "hard");
+  assert.strictEqual(g.difficulty, "hard");
+  assert.strictEqual(g.enemies.length, 4);
+  reset(g, 1, "easy");
+  assert.strictEqual(g.difficulty, "easy");
+  assert.strictEqual(g.enemies.length, 2);
+});
+
+test("unknown difficulty falls back to medium", () => {
+  const g = createGame(1, "ultra");
+  assert.strictEqual(g.difficulty, "medium");
 });

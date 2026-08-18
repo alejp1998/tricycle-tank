@@ -19,8 +19,9 @@ A playable **PixiJS web edition** of the game lives in
 try it at **[https://alejp1998.github.io/tricycle-tank/](https://alejp1998.github.io/tricycle-tank/)**:
 
 - Same rules as the real tank: **10-bullet magazine** (auto-reloads), **10 hits to win**, **5 hull points to lose**
+- **3 difficulty levels with dedicated maps**: 🟢 Training Grounds (2 target tanks) · 🟡 Industrial Zone (3 hunters) · 🔴 Fortress Siege (4 relentless tanks, 9 walls)
 - Drive with **WASD/arrows**, aim with the **mouse**, fire with **click/Space**, reload with **R**
-- Three AI tanks hunt you; crates absorb laser fire
+- AI tanks hunt you; crates absorb laser fire
 - The real **Tetris** and **Star Wars** buzzer note tables from `piTankGo_1.c`, played through WebAudio
 - **📖 Guide** modal inside the game explains the whole project (hardware, FSMs, controller mapping)
 

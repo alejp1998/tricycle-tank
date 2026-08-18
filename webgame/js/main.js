@@ -36,6 +36,7 @@
     bulletPlayer: 0x2dd4bf,
     bulletEnemy: 0xfb7185,
     wedge: 0xf59e0b,
+    plate: 0x94a3b8,
   };
 
   function groundColors() {
@@ -271,8 +272,8 @@
     grid.stroke({ width: 1, color: c.grid });
     cont.addChild(grid);
 
-    // obstacles
-    S.OBSTACLES.forEach(function (r) {
+    // obstacles (from the current difficulty's map)
+    game.map.obstacles.forEach(function (r) {
       var o = new PIXI.Graphics();
       o.roundRect(r.x, r.y, r.w, r.h, 8)
         .fill(c.crate)
@@ -565,6 +566,12 @@
       restart();
       markKey("click — restart", "restart");
     });
+    $id("difficulty").addEventListener("change", function () {
+      restart();
+      log(
+        "🎚️ Difficulty set to " + $id("difficulty").value.toUpperCase() + ".",
+      );
+    });
     $id("btn-sound").addEventListener("click", toggleSound);
     $id("btn-theme").addEventListener("click", toggleTheme);
     $id("btn-guide").addEventListener("click", toggleGuide);
@@ -574,7 +581,8 @@
   }
 
   function restart() {
-    S.reset(game, Math.floor(Math.random() * 1e9));
+    var diff = $id("difficulty").value;
+    S.reset(game, Math.floor(Math.random() * 1e9), diff);
     input = {
       throttle: 0,
       steer: 0,
@@ -585,7 +593,13 @@
     };
     sounds.hit = [];
     sounds.shoot = [];
-    log("🔄 New match — 10 hits to win, 5 HP to lose.");
+    log(
+      "🔄 " +
+        game.map.name +
+        " (" +
+        diff.toUpperCase() +
+        ") — 10 hits to win, 5 HP to lose.",
+    );
     updateHud();
     render();
   }
@@ -652,7 +666,13 @@
           ? "🌙"
           : "☀️";
 
-      log("🚁 Tricycle Tank ONLINE — drive, aim, and land 10 hits!");
+      log(
+        "🚁 Tricycle Tank ONLINE — " +
+          game.map.name +
+          " (" +
+          game.difficulty.toUpperCase() +
+          ")",
+      );
       log("🔫 10-bullet magazine · R reloads · 1/2 play Tetris / Star Wars");
       updateHud();
       render();
