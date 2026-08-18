@@ -2,7 +2,7 @@
 #include "torreta.h"
 
 int disparos; //Variable que almacena numero de balas restantes
-int debounceTime = DEBOUNCE_TIME;
+unsigned int debounceTime = DEBOUNCE_TIME;
 //------------------------------------------------------
 // PROCEDIMIENTOS DE INICIALIZACION DE LOS OBJETOS ESPECIFICOS
 //------------------------------------------------------

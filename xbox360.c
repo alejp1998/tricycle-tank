@@ -9,7 +9,7 @@
 
 double posX,posY = 0.0;				//Valor de joystick izquierdo pasado a ruedas
 int nrebotes = 0;					//Espera para movimiento de servos torreta mas lento
-int debounceTimeMando = DEBOUNCE_TIME;	//Prevencion rebotes teclas
+unsigned int debounceTimeMando = DEBOUNCE_TIME;	//Prevencion rebotes teclas
 int nsong = 1;						//Cancion seleccionada en efecto libre
 
 //Inicializamos sus valores a no pulsaciones

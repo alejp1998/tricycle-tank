@@ -78,7 +78,7 @@ void delay_until (unsigned int next) {
 }
 
 //Conjunto de acciones a ejecutar
-int main ()
+int main (void)
 {
 	//Declaramos el sistema a usar
 	TipoSistema sistema;
