@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tricycle Tank — Web Edition</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="alternate icon" href="favicon.png" />
+    <script>
+      // System theme by default (OS prefers-color-scheme), manual override in localStorage
+      (function () {
+        var stored = null;
+        try {
+          stored = localStorage.getItem("theme");
+        } catch (e) {
+          /* ignore */
+        }
+        var dark = stored
+          ? stored === "dark"
+          : window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.setAttribute(
+          "data-theme",
+          dark ? "dark" : "light",
+        );
+      })();
+    </script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+            <rect
+              x="2"
+              y="7"
+              width="20"
+              height="10"
+              rx="2.5"
+              stroke="#0F172A"
+              stroke-width="1.8"
+            />
+            <rect x="6" y="4" width="3" height="6" rx="1.2" fill="#0F172A" />
+            <rect x="15" y="4" width="3" height="6" rx="1.2" fill="#0F172A" />
+            <circle cx="5" cy="16" r="2.6" fill="#0F172A" />
+            <circle cx="19" cy="16" r="2.6" fill="#0F172A" />
+            <rect
+              x="10.5"
+              y="8.5"
+              width="3"
+              height="12"
+              rx="1.4"
+              fill="#0F172A"
+            />
+            <circle cx="12" cy="20.2" r="1.6" fill="#FFFFFF" />
+          </svg>
+        </div>
+        <div>
+          <h1>Tricycle Tank <span class="badge">WEB EDITION</span></h1>
+          <p class="subtitle">
+            PixiJS port of the Raspberry Pi laser combat tank · 10 hits to win
+          </p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn" id="btn-guide">📖 Guide</button>
+        <button class="btn" id="btn-sound">🔊 Sound</button>
+        <button class="btn" id="btn-restart">↻ Restart</button>
+        <button class="btn" id="btn-theme" title="Toggle theme">☀️</button>
+      </div>
+    </header>
+
+    <main class="cockpit">
+      <section class="stage-wrap">
+        <div id="pixi-stage"></div>
+        <div id="game-banner" class="game-banner hidden">
+          <span id="banner-emoji" class="banner-emoji">🏆</span>
+          <div>
+            <div id="banner-title" class="banner-title">VICTORY!</div>
+            <div id="banner-sub" class="banner-sub">
+              10 hits on the enemy tanks.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <section class="panel" id="mission-panel">
+          <h2>🎯 Mission</h2>
+          <div class="hud-row">
+            <span>Hits</span><b id="hud-hits">0 / 10</b>
+          </div>
+          <div class="hud-row">
+            <span>Magazine</span><b id="hud-mag">10 / 10</b>
+          </div>
+          <div class="hud-row"><span>Hull</span><b id="hud-hp">♥♥♥♥♥</b></div>
+          <div class="hud-row">
+            <span>Enemies</span><b id="hud-enemies">3 / 3</b>
+          </div>
+          <div id="hud-result" class="hud-result hidden"></div>
+        </section>
+
+        <section class="panel">
+          <h2>🕹️ Controls</h2>
+          <div class="last-key">
+            <span>⌨️ Last key</span><b id="last-key">—</b>
+          </div>
+          <div class="ctrl-grid">
+            <button class="ctrl" data-action="turret-left" title="Turret left">
+              ◀
+            </button>
+            <button class="ctrl" data-action="drive" title="Drive forward">
+              ▲
+            </button>
+            <button
+              class="ctrl"
+              data-action="turret-right"
+              title="Turret right"
+            >
+              ▶
+            </button>
+            <button class="ctrl" data-action="turn" title="Turn left">◤</button>
+            <button class="ctrl" data-action="fire" title="Fire laser">
+              🔫
+            </button>
+            <button class="ctrl" data-action="turn-r" title="Turn right">
+              ◥
+            </button>
+            <button class="ctrl" data-action="reverse" title="Reverse">
+              ▼
+            </button>
+            <button class="ctrl" data-action="reload" title="Reload magazine">
+              ⟳
+            </button>
+          </div>
+          <ul class="keys">
+            <li><b>WASD / Arrows</b> — drive &amp; turn</li>
+            <li><b>Mouse</b> — aim turret · <b>Click</b> — fire</li>
+            <li><b>Space</b> — fire · <b>R</b> — reload</li>
+            <li><b>1 / 2</b> — Tetris / Star Wars buzzer</li>
+          </ul>
+        </section>
+
+        <section class="panel log-panel">
+          <h2>📡 Comms</h2>
+          <div id="log" class="log"></div>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="hintbar">
+      drive with WASD · aim with the mouse · land 10 hits to win · 5 hull points
+      to lose · R reload · G guide
+    </footer>
+
+    <div id="guide" class="modal hidden">
+      <div class="modal-backdrop" data-close-guide></div>
+      <div class="modal-card">
+        <button class="modal-close" data-close-guide title="Close">✕</button>
+        <h2>📖 Tricycle Tank — Project Guide</h2>
+
+        <h3>🎓 The Project</h3>
+        <p>
+          <b>Tricycle Tank</b> was a university (SDG2) robotic-combat game
+          written in <b>C</b> for a <b>Raspberry Pi</b>. A tricycle-drive tank
+          with a dual-servo turret fires an IR "laser" at opponents; the last
+          tank standing wins. All hardware control goes through <b>wiringPi</b>:
+          hardware PWM on the wheels (pins 18/19), software PWM on the turret
+          servos (17/27), a softTone buzzer for sound effects (pin 23), the
+          laser on pin 9, and a rising-edge interrupt on pin 11 for hit
+          detection.
+        </p>
+
+        <h3>🧠 The Architecture</h3>
+        <p>
+          The game runs <b>four parallel finite-state machines</b> on a shared
+          10 ms clock: the <b>xbox360 FSM</b> (controller input, debounced), the
+          <b>player FSM</b> (melody playback — Despacito, Game of Thrones,
+          Tetris and Star Wars on the buzzer), the <b>ruedas FSM</b> (wheel PWM
+          + steering) and the <b>torreta FSM</b> (turret servos, IR shot and
+          shoot-timeout). An Xbox 360 controller drove everything through a
+          Python bridge (<a
+            href="https://github.com/alejp1998/xbox360controller"
+            target="_blank"
+            rel="noopener"
+            >xbox360controller</a
+          >) writing a <code>key turret posX posY</code> file the C code polls.
+        </p>
+
+        <h3>🎮 Controller Mapping (original)</h3>
+        <ul>
+          <li>
+            <b>Left stick</b> — move wheels · <b>Right stick</b> — turret servos
+          </li>
+          <li>
+            <b>Right trigger</b> — fire laser · <b>X</b> — reload (10-bullet
+            magazine)
+          </li>
+          <li>
+            <b>D-Pad</b> — select melody · <b>A/B</b> — play / stop melody
+          </li>
+          <li><b>START</b> — begin game · <b>Y</b> — end game</li>
+        </ul>
+
+        <h3>🖥️ This Web Edition</h3>
+        <p>
+          A faithful playable port: the same
+          <b>10-bullet magazine</b> (auto-reloads when empty or press <b>R</b>),
+          the same <b>10 hits to win</b>, <b>5 hull points to lose</b>, arena
+          obstacles that absorb laser fire, three AI tanks that hunt you, and
+          the real <b>Tetris</b> and <b>Star Wars</b> note tables from the C
+          source played through WebAudio. Drive with <b>WASD/arrows</b>, aim
+          with the <b>mouse</b> (or <b>Q/E</b>), fire with <b>click/Space</b>.
+        </p>
+      </div>
+    </div>
+
+    <script src="https://pixijs.download/release/pixi.min.js"></script>
+    <script src="js/tank-core.js"></script>
+    <script src="js/melodies.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

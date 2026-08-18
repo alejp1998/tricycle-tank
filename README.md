@@ -1,9 +1,10 @@
 # Tricycle Tank 🚀🔫
 
-[![C](https://img.shields.io/badge/C-gnu99-3776AB?style=flat-square)](https://en.wikipedia.org/wiki/C_(programming_language))
+[![C](https://img.shields.io/badge/C-gnu99-3776AB?style=flat-square)](<https://en.wikipedia.org/wiki/C_(programming_language)>)
 [![Hardware](https://img.shields.io/badge/Raspberry%20Pi-wiringPi-C51A4A?style=flat-square)](https://github.com/WiringPi/WiringPi)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg?style=flat-square)](LICENSE)
 [![Build](https://img.shields.io/badge/build-make%20%7C%20make%20test-10B981?style=flat-square)](Makefile)
+[![Play](https://img.shields.io/badge/▶%20Play-PixiJS%20Web%20Edition-8B5CF6?style=flat-square)](https://alejp1998.github.io/tricycle-tank/)
 
 A C-based robotic combat game for the **Raspberry Pi**, built as a university
 project (SDG2). Players control a **laser-equipped tricycle tank** with an
@@ -11,7 +12,21 @@ project (SDG2). Players control a **laser-equipped tricycle tank** with an
 right stick, and fire an IR "laser" at opponents. Each tank has limited lives —
 the last one standing wins.
 
-![Architecture: FSM-driven](docs/fsm_arch.png)
+## 🎮 Play it in the browser
+
+A playable **PixiJS web edition** of the game lives in
+[`webgame/`](webgame/) and deploys to **GitHub Pages** —
+try it at **[https://alejp1998.github.io/tricycle-tank/](https://alejp1998.github.io/tricycle-tank/)**:
+
+- Same rules as the real tank: **10-bullet magazine** (auto-reloads), **10 hits to win**, **5 hull points to lose**
+- Drive with **WASD/arrows**, aim with the **mouse**, fire with **click/Space**, reload with **R**
+- Three AI tanks hunt you; crates absorb laser fire
+- The real **Tetris** and **Star Wars** buzzer note tables from `piTankGo_1.c`, played through WebAudio
+- **📖 Guide** modal inside the game explains the whole project (hardware, FSMs, controller mapping)
+
+![Tricycle Tank web edition](docs/webgame_light.png)
+
+![Architecture: FSM-driven](docs/fsm_arch.svg)
 
 ## ✨ Features
 
@@ -24,25 +39,25 @@ the last one standing wins.
 
 ## 📋 Hardware Requirements
 
-| Component | Detail |
-|---|---|
-| Raspberry Pi | Any model with 40-pin GPIO (wiringPi compatible) |
-| Xbox 360 controller | Wired or wireless receiver |
-| Motor driver | Dual H-bridge (e.g. L298N) for the two drive wheels |
-| 2× servos | Pan/tilt turret (SG90-class) |
+| Component             | Detail                                              |
+| --------------------- | --------------------------------------------------- |
+| Raspberry Pi          | Any model with 40-pin GPIO (wiringPi compatible)    |
+| Xbox 360 controller   | Wired or wireless receiver                          |
+| Motor driver          | Dual H-bridge (e.g. L298N) for the two drive wheels |
+| 2× servos             | Pan/tilt turret (SG90-class)                        |
 | IR emitter + receiver | Laser firing & hit detection (pin 9 out, pin 11 in) |
-| Buzzer / speaker | Sound effects via softTone (pin 23) |
-| Laser diode | The "weapon" (activated on pin 9) |
+| Buzzer / speaker      | Sound effects via softTone (pin 23)                 |
+| Laser diode           | The "weapon" (activated on pin 9)                   |
 
 ## 🔌 GPIO Pin Configuration
 
-| Pin | Function |
-|-----|----------|
-| 18, 19 | Hardware PWM — wheel control |
+| Pin    | Function                                             |
+| ------ | ---------------------------------------------------- |
+| 18, 19 | Hardware PWM — wheel control                         |
 | 17, 27 | Software PWM — turret servos (horizontal / vertical) |
-| 23 | SoftTone — sound effects playback |
-| 9 | High — laser shooting activation |
-| 11 | Rising-edge interrupt — hit detection |
+| 23     | SoftTone — sound effects playback                    |
+| 9      | High — laser shooting activation                     |
+| 11     | Rising-edge interrupt — hit detection                |
 
 ## 🛠️ Build & Run
 
@@ -68,13 +83,13 @@ make            # Debug/piTankGo_1
 
 Other targets:
 
-| Target | Purpose |
-|---|---|
-| `make debug` | Debug build (`-g -O0`, `DPRINTF` enabled) |
-| `make run` | Build and launch with `sudo` |
+| Target       | Purpose                                                                                         |
+| ------------ | ----------------------------------------------------------------------------------------------- |
+| `make debug` | Debug build (`-g -O0`, `DPRINTF` enabled)                                                       |
+| `make run`   | Build and launch with `sudo`                                                                    |
 | `make check` | Syntax-check every source on **any** host (no Pi needed — uses `tests/stubs/` wiringPi headers) |
-| `make test` | Run the hardware-free **FSM unit tests** |
-| `make clean` | Remove `Debug/` |
+| `make test`  | Run the hardware-free **FSM unit tests**                                                        |
+| `make clean` | Remove `Debug/`                                                                                 |
 
 ### 3. Start the Xbox controller bridge (background)
 
@@ -107,17 +122,17 @@ sudo ./Debug/piTankGo_1   # or just: sudo make run
 
 ## 🎮 Xbox 360 Controller Mapping
 
-| Input | Action |
-|---|---|
-| Left Joystick | Move wheels |
-| Right Joystick | Move turret servos |
-| D-Pad | Select sound effect (Despacito / GOT / Tetris / Star Wars) |
-| Right Trigger | Fire laser |
-| A | Play selected sound effect |
-| B | Stop sound effect |
-| X | Reload (max 10 bullets) |
-| Y | End game |
-| START | Begin game |
+| Input          | Action                                                     |
+| -------------- | ---------------------------------------------------------- |
+| Left Joystick  | Move wheels                                                |
+| Right Joystick | Move turret servos                                         |
+| D-Pad          | Select sound effect (Despacito / GOT / Tetris / Star Wars) |
+| Right Trigger  | Fire laser                                                 |
+| A              | Play selected sound effect                                 |
+| B              | Stop sound effect                                          |
+| X              | Reload (max 10 bullets)                                    |
+| Y              | End game                                                   |
+| START          | Begin game                                                 |
 
 ## 🧠 Architecture
 
@@ -149,16 +164,16 @@ Four finite-state machines (implemented by the tiny reusable engine in
 
 Module map:
 
-| File | Responsibility |
-|---|---|
-| `piTankGo_1.c` | System setup, FSM wiring, main loop, sound-effect tables |
-| `fsm.c` / `fsm.h` | Reusable finite-state-machine engine |
-| `tmr.c` / `tmr.h` | POSIX timer helpers |
-| `xbox360.c` | Controller input, debounce, joystick parsing |
-| `ruedas.c` | Wheel PWM + tricycle steering |
-| `torreta.c` | Turret servos, IR shooting, hit detection ISR |
-| `player.c` | SoftTone melody player |
-| `piTankGoLib.h` | Shared flags, mutex keys, clock constant |
+| File              | Responsibility                                           |
+| ----------------- | -------------------------------------------------------- |
+| `piTankGo_1.c`    | System setup, FSM wiring, main loop, sound-effect tables |
+| `fsm.c` / `fsm.h` | Reusable finite-state-machine engine                     |
+| `tmr.c` / `tmr.h` | POSIX timer helpers                                      |
+| `xbox360.c`       | Controller input, debounce, joystick parsing             |
+| `ruedas.c`        | Wheel PWM + tricycle steering                            |
+| `torreta.c`       | Turret servos, IR shooting, hit detection ISR            |
+| `player.c`        | SoftTone melody player                                   |
+| `piTankGoLib.h`   | Shared flags, mutex keys, clock constant                 |
 
 ## 🧪 Testing
 
