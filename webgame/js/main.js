@@ -621,8 +621,9 @@
     cell = Math.min(w / S.ARENA_W, h / S.ARENA_H);
     var cw = Math.floor(S.ARENA_W * cell);
     var ch = Math.floor(S.ARENA_H * cell);
-    app.renderer.resize(cw, ch);
-    // Canvas keeps its exact letterboxed size (no stretching/overflow)
+    // The renderer screen stays at WORLD size (1280x800) so the whole map is
+    // always in view; the CSS size letterboxes the canvas to fit the stage.
+    app.renderer.resize(S.ARENA_W, S.ARENA_H);
     app.canvas.style.width = cw + "px";
     app.canvas.style.height = ch + "px";
   }
@@ -639,6 +640,8 @@
       var wrap = $id("pixi-stage");
       wrap.appendChild(app.canvas);
       stage = new PIXI.Container();
+      window.__tankStage = stage; // debug handle
+      window.__tankApp = app;
       app.stage.addChild(stage);
       window.addEventListener("resize", layout);
       layout();
