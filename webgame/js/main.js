@@ -462,12 +462,17 @@
       }
       if (k === "Digit1") {
         playMelody(0);
-        log("🎵 Tetris");
+        log("🎵 Buzzer: Tetris");
         return;
       }
       if (k === "Digit2") {
         playMelody(1);
-        log("🎵 Star Wars");
+        log("🎵 Buzzer: Star Wars");
+        return;
+      }
+      if (k === "Digit3") {
+        playMelody(2);
+        log("🎵 Buzzer: Despacito");
         return;
       }
 
@@ -673,7 +678,9 @@
           game.difficulty.toUpperCase() +
           ")",
       );
-      log("🔫 10-bullet magazine · R reloads · 1/2 play Tetris / Star Wars");
+      log(
+        "🔫 10-bullet magazine · R reloads · 1/2/3 play Tetris / Star Wars / Despacito",
+      );
       updateHud();
       render();
       wireInput();
