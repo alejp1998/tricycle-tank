@@ -164,86 +164,148 @@
       <div class="modal-card">
         <button class="modal-close" data-close-guide title="Close">✕</button>
         <h2>📖 Tricycle Tank — Project Guide</h2>
+        <div class="guide-tabs">
+          <button class="guide-tab active" data-tab="theory">🧠 Theory</button>
+          <button class="guide-tab" data-tab="game">🎮 Game</button>
+        </div>
 
-        <h3>🎓 The Project</h3>
-        <p>
-          <b>Tricycle Tank</b> was a university (SDG2) robotic-combat game
-          written in <b>C</b> for a <b>Raspberry Pi</b>. A tricycle-drive tank
-          with a dual-servo turret fires an IR "laser" at opponents; the last
-          tank standing wins. All hardware control goes through <b>wiringPi</b>:
-          hardware PWM on the wheels (pins 18/19), software PWM on the turret
-          servos (17/27), a softTone buzzer for sound effects (pin 23), the
-          laser on pin 9, and a rising-edge interrupt on pin 11 for hit
-          detection.
-        </p>
+        <section class="guide-panel" data-tab="theory">
+          <h3>💡 The big idea in plain words</h3>
+          <p>
+            A robot is a computer with hands. This tank's "brain" is a set of
+            <b>behaviours that switch</b>: drive, aim, reload, play a melody. At
+            every heartbeat (10 ms) the code checks a few conditions — "did the
+            player move the stick?", "did we get hit?", "is the magazine empty?"
+            — and reacts. That pattern, a <b>finite-state machine</b>, is the
+            whole secret of the project: complex behaviour from simple,
+            well-defined states and crisp transition rules.
+          </p>
 
-        <h3>🧠 The Architecture</h3>
-        <p>
-          The game runs <b>four parallel finite-state machines</b> on a shared
-          10 ms clock: the <b>xbox360 FSM</b> (controller input, debounced), the
-          <b>player FSM</b> (melody playback — Despacito, Game of Thrones,
-          Tetris and Star Wars on the buzzer), the <b>ruedas FSM</b> (wheel PWM
-          + steering) and the <b>torreta FSM</b> (turret servos, IR shot and
-          shoot-timeout). An Xbox 360 controller drove everything through a
-          Python bridge (<a
-            href="https://github.com/alejp1998/xbox360controller"
-            target="_blank"
-            rel="noopener"
-            >xbox360controller</a
-          >) writing a <code>key turret posX posY</code> file the C code polls.
-        </p>
+          <h3>🧠 Finite-state machines (FSM)</h3>
+          <p>
+            A finite-state machine is a
+            <b>flowchart the program actually lives inside</b>: exactly one
+            state is active at a time, and every arrow between states has a
+            condition. Formally,
+          </p>
+          <p class="math">\[ \delta : S \times I \rightarrow S \]</p>
+          <p>
+            — a transition function mapping (current state, input event) to the
+            next state. The C code runs <b>four parallel FSMs</b> on a shared 10
+            ms clock:
+          </p>
+          <ul>
+            <li><b>xbox360</b> — controller input, debounced;</li>
+            <li>
+              <b>player</b> — melody playback on the buzzer (Despacito, GoT,
+              Tetris, Star Wars);
+            </li>
+            <li><b>ruedas</b> — wheel PWM + steering;</li>
+            <li><b>torreta</b> — turret servos, IR shot, shoot timeout.</li>
+          </ul>
+          <p>
+            The web edition ports these states and timings 1:1 — the game you
+            play is the C program's behaviour, rendered in the browser.
+          </p>
 
-        <h3>🎮 Controller Mapping (original)</h3>
-        <ul>
-          <li>
-            <b>Left stick</b> — move wheels · <b>Right stick</b> — turret servos
-          </li>
-          <li>
-            <b>Right trigger</b> — fire laser · <b>X</b> — reload (10-bullet
-            magazine)
-          </li>
-          <li>
-            <b>D-Pad</b> — select melody · <b>A/B</b> — play / stop melody
-          </li>
-          <li><b>START</b> — begin game · <b>Y</b> — end game</li>
-        </ul>
+          <h3>⚡ PWM — how you control a motor with 0s and 1s</h3>
+          <p>
+            A digital pin can only be fully on or fully off.
+            <b>PWM (pulse width modulation)</b> fakes "in between" by switching
+            very fast:
+          </p>
+          <p class="math">
+            \[ \text{duty} = \frac{t_{\text{on}}}{T} \times 100\% \]
+          </p>
+          <p>
+            The <b>duty cycle</b> — fraction of time the pin is high — sets the
+            effective voltage, i.e. the motor speed. The wheels use
+            <b>hardware PWM</b> (pins 18/19: precise, no CPU involvement); the
+            turret <b>servos</b> use <b>software PWM</b> (pins 17/27), where the
+            <i>pulse width</i> itself encodes the angle (e.g. 1 ms ≈ 0°, 1.5 ms
+            ≈ 90°, 2 ms ≈ 180°).
+          </p>
 
-        <h3>🎚️ Difficulty & Maps</h3>
-        <ul>
-          <li>
-            <b>🟢 Easy — Training Grounds</b>: open arena, 2 slow target tanks
-            (5 HP each)
-          </li>
-          <li>
-            <b>🟡 Medium — Industrial Zone</b>: 6 crates, 3 hunter tanks (4 HP
-            each)
-          </li>
-          <li>
-            <b>🔴 Hard — Fortress Siege</b>: 9 walls, 4 relentless tanks (3 HP
-            each)
-          </li>
-        </ul>
-        <p>
-          Every map allows the <b>10 hits to win</b> — pick your fight and press
-          <b>↻ Restart</b> to reload the map.
-        </p>
+          <h3>🖱️ Debouncing — one press should mean one event</h3>
+          <p>
+            Mechanical buttons "bounce": the contacts chatter for a few
+            milliseconds before settling. Without care, one press looks like
+            many. The fix is a <b>debounce window</b> — ignore readings until
+            the signal has been stable for a few ms — so exactly one event fires
+            per press.
+          </p>
 
-        <h3>🖥️ This Web Edition</h3>
-        <p>
-          A faithful playable port: the same
-          <b>10-bullet magazine</b> (auto-reloads when empty or press <b>R</b>),
-          the same <b>10 hits to win</b>, <b>5 hull points to lose</b>, arena
-          obstacles that absorb laser fire, three AI tanks that hunt you, and
-          the real <b>Tetris</b> and <b>Star Wars</b> note tables from the C
-          source played through WebAudio. Drive with <b>WASD/arrows</b>, aim
-          with the <b>mouse</b> (or <b>Q/E</b>), fire with <b>click/Space</b>.
-        </p>
+          <h3>🎯 IR "laser" hit detection</h3>
+          <p>
+            The laser is infrared light; the receiver raises a
+            <b>hardware interrupt</b> (pin 11, rising edge) the moment a hit
+            arrives. The controller counts magazine rounds (10 shots, reload
+            with X) and applies damage to the opponent's HP.
+          </p>
+        </section>
+
+        <section class="guide-panel hidden" data-tab="game">
+          <h3>🎮 Controller Mapping (original)</h3>
+          <ul>
+            <li>
+              <b>Left stick</b> — move wheels · <b>Right stick</b> — turret
+              servos
+            </li>
+            <li>
+              <b>Right trigger</b> — fire laser · <b>X</b> — reload (10-bullet
+              magazine)
+            </li>
+            <li>
+              <b>D-Pad</b> — select melody · <b>A/B</b> — play / stop melody
+            </li>
+            <li><b>START</b> — begin game · <b>Y</b> — end game</li>
+          </ul>
+          <h3>🎚️ Difficulty & Maps</h3>
+          <ul>
+            <li>
+              <b>🟢 Easy — Training Grounds</b>: open arena, 2 slow target tanks
+              (5 HP each)
+            </li>
+            <li>
+              <b>🟡 Medium — Industrial Zone</b>: 6 crates, 3 hunter tanks (4 HP
+              each)
+            </li>
+            <li>
+              <b>🔴 Hard — Fortress</b>: 9 walls, 4 aggressive tanks (3 HP each)
+            </li>
+          </ul>
+          <h3>🖥️ The hardware</h3>
+          <p>
+            Raspberry Pi + tricycle-drive chassis, wiringPi control (PWM 18/19,
+            servos 17/27, buzzer 23, laser 9, hit interrupt 11), Xbox 360
+            controller via the
+            <a
+              href="https://github.com/alejp1998/xbox360controller"
+              target="_blank"
+              rel="noopener"
+              >xbox360controller</a
+            >
+            Python bridge. Full FSM architecture:
+            <a
+              href="https://github.com/alejp1998/tricycle-tank/blob/master/docs/fsm_arch.svg"
+              target="_blank"
+              rel="noopener"
+              >docs/fsm_arch.svg</a
+            >.
+          </p>
+        </section>
       </div>
     </div>
 
     <script src="https://pixijs.download/release/pixi.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"
+      id="MathJax-script"
+      async
+    ></script>
+    <script src="js/guide.js?v=2"></script>
     <script src="js/tank-core.js?v=2"></script>
     <script src="js/melodies.js?v=2"></script>
-    <script src="js/main.js?v=2"></script>
+    <script src="js/main.js?v=3"></script>
   </body>
 </html>
