@@ -12,6 +12,10 @@ project (SDG2). Players control a **laser-equipped tricycle tank** with an
 right stick, and fire an IR "laser" at opponents. Each tank has limited lives —
 the last one standing wins.
 
+### 🖼️ Screenshots
+
+![Tricycle Tank web edition](docs/webgame_light.png)
+
 ## 🎮 Play it in the browser
 
 A playable **PixiJS web edition** of the game lives in
