@@ -666,10 +666,6 @@
       layout();
 
       // theme boot (inline head script already set data-theme)
-      $id("btn-theme").textContent =
-        document.documentElement.getAttribute("data-theme") === "dark"
-          ? "🌙"
-          : "☀️";
 
       log(
         "🚁 Tricycle Tank ONLINE — " +
